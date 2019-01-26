@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package internal;
+
+import "types/version/version.proto";
+
+option go_package = "github.com/dchenk/mazewire/pkg/plugins/internal";
+
+// A Spec contains a single specification by a plugin.
+// This type is needed separately from the Spec type in the specs package because here the value
+// must be an actual string, not a fmt.Stringer.
+message Spec {
+	// Type is the type of specification defined in this PluginSpec.
+	uint32 type = 1;
+
+	// Value is the particular value for the spec type.
+	string value = 2;
+}
+
+// A Handler is generated out of a hooks.Handler or filters.Handler.
+message Handler {
+	repeated Spec specs = 1;
+}
+
+// A Registration contains all the information the system needs to register a plugin.
+// This message type includes all of the fields you get by calling Identity on a plugins.Plugin instance,
+// which together uniquely identifies a plugin at a particular version.
+message Registration {
+	// Name is the plugin's name, without any version information in it.
+	string name = 1;
+
+	// ID is the plugin's unique identifier (within a plugins repository).
+	string id = 2;
+
+	// Author is the plugin's author.
+	// This field is reserved for future use.
+	// string author = 3;
+
+	// Ver is the plugin's version.
+	version.Version ver = 4;
+
+	// Specs contains the specifications within which the plugin works.
+	repeated Spec specs = 5;
+
+	// Hooks is all of the hooks which the plugin wants to handle with its hook handlers.
+	map<string, Handler> hooks = 6;
+
+	// Filters is all of the filters which the plugin wants to handle with its filter handlers.
+	map<string, Handler> filters = 7;
+
+	// CustomHooks contains all of a plugin's custom defined hooks.
+	repeated string custom_hooks = 8;
+
+	// CustomFilters contains all of a plugin's custom defined filters.
+	repeated string custom_filters = 9;
+}
+
+message InitRequest {
+}
+
+message HookRequest {
+	string hook_name = 1;
+	bytes data = 2;
+}
+
+message HookResponse {
+	bytes data = 1;
+}
+
+message FilterData {
+	string filter_name = 1;
+	bytes data = 2;
+}
+
+service Plugin {
+	rpc Init(InitRequest) returns (Registration);
+	rpc DoHook(HookRequest) returns (HookResponse);
+	rpc DoFilter(FilterData) returns (FilterData);
+}
+
+message FullRegistration {
+	Registration reg = 1;
+	Repository repo = 2;
+}
+
+message Repository {
+	string name = 1;
+	string id = 2;
+	string root_url = 3;
+}

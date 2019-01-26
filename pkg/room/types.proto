@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package room;
+
+option go_package = "github.com/dchenk/mazewire/pkg/room";
+
+// A Module represents the smallest unit of composition that appears as an element in the HTML of a page.
+// We know how to deal with the Data field when we know the Type and have a matching ModuleCompiler to compile
+// it or a matching ModuleBuilder to build its final HTML.
+//
+// A compiled module may be fully static and ready to be written out to the page without building, in which
+// case the data contains the final HTML and the type is "_static".
+message Module {
+	// Type indicates broadly the kind of module that this is. It is used to identify what ModuleCompiler or
+	// ModuleBuilder to use.
+	string type = 1;
+
+	// Dyn is the ID of the record holding the module's dynamic settings. Using the Dyn field is optional for
+	// each module type, but if it is non-zero then it must be the ID of the Datum entity which holds the
+	// dynamic settings. (This requirement is intended to make it possible to get all of the data for the
+	// entire page tree with a single query before the page is built.)
+	int64 dyn = 2;
+
+	// Data contains all of the configuration data needed for the module. The data can be encoded in any
+	// format, and it's up to the corresponding ModuleCompiler and ModuleBuilder to be able to decode it.
+	//
+	// When a Module is compiled, if Compile returns true then Data must already contain all the pre-built
+	// HTML.
+	bytes data = 3;
+}
+
+message Column {
+	repeated Module modules = 1;
+}
+
+// Common is a data structure commonly used in this package in various other types.
+message Common {
+	// Type indicates the broad type of the structure.
+	string type = 1;
+
+	// IdAttr is the user's custom ID attribute for the element.
+	string id_attr = 2;
+
+	// Classes is the user's custom classes.
+	// For compiled sections and rows, this includes classes added by module compilers for styling.
+	repeated string classes = 3;
+
+	// Styles is the user's styles for the row.
+	map<string, string> styles = 4;
+
+	// Options contains additional options.
+	map<string, string> options = 5;
+}
+
+// A Row holds the settings of both static and dynamic page rows. Directly within a Row are columns.
+// A compiled Row only needs to be built, along with everything it contains, to be displayed.
+message Row {
+	// Common includes common fields. The Type is the column layout type of the row.
+	Common common = 1;
+
+	// Dyn is the ID of the row's dynamic settings, if not zero.
+	int64 dyn = 2;
+
+	// Columns contains the row's columns. For compiled Rows, this field is not empty only if there is content
+	// within the row that is dynamic.
+	repeated Column columns = 3;
+
+	// Html is used only for compiled rows when the entire row is static HTML.
+	bytes html = 4;
+}
+
+// A Section holds the settings of a section in a Tree. Within a Section are Row elements.
+// A compiled Section only needs to be built, along with everything it contains, to be displayed.
+message Section {
+	// Common includes common fields. The Type must be either "standard" or "full".
+	Common common = 1;
+
+	// Dyn is the ID of the section's dynamic settings, if not zero.
+	int64 dyn = 2;
+
+	// Rows contains the section's rows.
+	repeated Row rows = 3;
+
+	// Html is used only for compiled rows when the entire row is static HTML.
+	bytes html = 4;
+}
+
+// A Tree represents the structure of a page. Each Section within a Tree may contain Row elements, which
+// contain Column elements, which contain Module elements.
+//
+// Tree implements the ModuleCompiler and ModuleBuilder interfaces, so a Tree can be nested as a Module.
+//
+// A compiled Tree represents the structure of a compiled page, though some elements may need to be compiled
+// dynamically. Each compiled Section within a Tree contains compiled Row elements, each of which may in turn
+// contain Column elements with compiled Module elements.
+message Tree {
+	repeated Section sections = 1;
+}

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+// The messages in this file are special because they are implemented manually within the
+// room package itself.
+
+package special;
+
+option go_package = "github.com/dchenk/mazewire/pkg/room/special";
+
+// The PageCSS type is used to combine the data of a bytes.Buffer (embedded as private) with a
+// list of names of modules whose CSS code has already been written to the buffer.
+message PageCSS {
+	bytes code = 1;
+	repeated string written_modules = 2;
+}

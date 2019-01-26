@@ -1,0 +1,344 @@
+body {
+	margin: 0;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	line-height: 1.4em;
+	font-size: 16px;
+
+	--mdc-theme-primary: #3498db;
+	--theme-primary: #3498db;
+	--theme-accent: #1a6496; /* #2980b9; */
+
+	--theme-red: #E74C3C;
+}
+
+body, h1, h2, h3, h4, h5, h6, .material-bttn, .mdc-list-item, .mdc-select__selected-text {
+	font-family: Muli, "Helvetica Neue", "Source Sans Pro", "Arial", sans-serif !important;
+}
+
+h1, h2 {
+	font-weight: normal;
+}
+
+h1 {
+	font-size: 33px;
+	font-weight: 300;
+	margin: 25px 0 15px;
+	line-height: 1.2em;
+}
+
+h2 {
+	font-size: 29px;
+	font-weight: 400;
+	margin: 22px 0 13px;
+	line-height: 1.2em;
+}
+
+h3 {
+	font-size: 25px;
+	font-weight: 400;
+	margin: 20px 0 11px;
+	line-height: 1.25em;
+}
+
+h4 {
+	font-size: 23px;
+	font-weight: 400;
+	margin: 17px 0 10px;
+	line-height: 1.3em;
+}
+
+h5 {
+	font-size: 20px;
+	font-weight: 600;
+	margin: 14px 0 9px;
+	line-height: 1.4em;
+}
+
+h6 {
+	font-size: 17px;
+	font-weight: 600;
+	margin: 10px 0 7px;
+	line-height: 1.4em;
+}
+
+b, strong {
+	font-weight: 700;
+}
+
+em, i {
+	font-style: italic;
+}
+
+a {
+	text-decoration: none;
+	color: var(--theme-primary);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+a:focus, button:focus {
+	outline: none;
+}
+
+img {
+	vertical-align: top;
+	max-width: 100%;
+	height: auto;
+}
+
+ul {
+	list-style-type: none;
+	margin: 17px 0;
+	padding: 0;
+}
+
+p {
+	margin-top: 0.1em;
+	margin-bottom: 0.8em;
+}
+
+.bkg-primary {
+	background-color: var(--theme-primary) !important;
+	color: #fff !important;
+}
+
+#app {
+	display: flex;
+	flex-direction: row;
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	height: 100vh;
+	width: 100%;
+
+	color: #2c3e50;
+}
+
+#main {
+	display: inline-flex;
+	flex-direction: column;
+	flex-grow: 1;
+	height: 100%;
+	box-sizing: border-box;
+	overflow-x: hidden;
+}
+
+/* Forms (start) */
+
+.input-helper-info {
+	font-style: italic;
+	font-size: .95em;
+	margin: 1px 0 2px;
+	color: #E53935;
+}
+
+select, button {
+	cursor: pointer;
+}
+
+textarea {
+	width: 100%;
+	max-width: 100%;
+	padding: 8px;
+	box-sizing: border-box;
+	height: 120px;
+	font-size: inherit;
+}
+
+/* Forms (end) */
+
+/* Error messages */
+p.err-message {
+	color: var(--theme-red);
+	font-size: 1.1em;
+	line-height: 1.2em;
+}
+
+/* my material-type styles (start) */
+
+.material-card {
+	-webkit-box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+	box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+	box-sizing: border-box;
+	padding: 16px;
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+.material-card.has-head {
+	padding-top: 0;
+}
+
+/* my material-type styles (end) */
+
+.main-body, #bottom-footer {
+	max-width: 96%;
+	width: 96%;
+	padding: 0;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#bottom-footer {
+	margin-top: 30px;
+	margin-bottom: 15px;
+}
+
+@media (max-width: 600px) {
+	.main-body, #bottom-footer {
+		max-width: 94vw;
+		width: 94vw;
+	}
+}
+
+.material-icons {
+	cursor: pointer;
+}
+
+.mdc-select .mdc-list li, span.mdc-select__selected-text { /* for long option names, especially for mobile */
+	overflow-x: auto;
+}
+
+.mdc-list-item:hover {
+	background-color: #eee;
+}
+
+.bkg-primary.material-bttn-raised {
+	font-weight: 600;
+}
+
+/* material button (start) */
+
+.material-bttn {
+	display: inline-block;
+	text-align: center;
+	box-sizing: border-box;
+	position: relative;
+	outline: none;
+	padding: 0 16px;
+	font-size: .89em;
+	line-height: 2.25rem;
+	letter-spacing: .03em;
+	vertical-align: top;
+	-webkit-appearance: none;
+	cursor: pointer;
+	color: inherit;
+	border: none;
+	border-radius: 4px;
+	background: transparent;
+	will-change: opacity;
+	text-decoration: none;
+	text-transform: uppercase;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	transition: background-color 200ms cubic-bezier(.12,.73,.8,.7);
+}
+
+.material-bttn.smaller {
+	line-height: 1.95rem;
+	padding: 0 14.5px;
+	font-size: .855rem;
+	letter-spacing: .026em;
+}
+
+.material-bttn.has-icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+.material-bttn.has-icon > span {
+	padding-right: 4px;
+	margin-left: -2px;
+}
+
+.material-bttn-raised {
+	box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+	transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.material-bttn-raised:hover, .material-bttn-raised:focus {
+	box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.material-bttn:not(.upgraded):hover {
+	/*background-color: #E0E0E0;*/
+}
+
+.material-bttn:disabled, .material-bttn:disabled:hover {
+	background-color: #BDBDBD;
+	color: #fff;
+	box-shadow: none;
+	cursor: auto;
+}
+
+@media screen and (max-width: 400px) {
+	.material-bttn {
+		font-size: .81rem;
+	}
+}
+
+/* material button (end) */
+
+/* material radio (start) */
+
+.material-radio {
+	display: none;
+}
+
+.material-radio + label {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+
+.material-radio + label .radio-circle {
+	padding-right: 8px;
+}
+
+.material-radio + label .radio-circle:after {
+	content: "radio_button_unchecked";
+	color: #a9a9a9;
+	transition: color 0.08s ease-in-out 0s;
+}
+
+.material-radio:checked + label .radio-circle:after {
+	content: "radio_button_checked";
+	color: var(--theme-primary);
+}
+
+/* material radio (end) */
+
+/* general helpers (start) */
+
+.two-radio-options {
+	display: flex;
+	justify-content: space-evenly;
+	margin-bottom: 17px;
+}
+
+.dragarea {
+	min-height: 30px;
+	box-sizing: border-box;
+}
+
+/* general helpers (end) */
+
+/* Ace editor */
+
+.ace-editor-container { /* IMPORTANT: each instance of the editor container must have its height set manually */
+	position: relative;
+	border: 1px solid #BDBDBD;
+	border-radius: 2px;
+}
+
+.ace-editor-inner {
+	position: absolute !important;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: 0;
+}

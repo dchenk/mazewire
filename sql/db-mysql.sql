@@ -1,0 +1,1 @@
+-- This file describes the schemas used for the app for MySQL databases.

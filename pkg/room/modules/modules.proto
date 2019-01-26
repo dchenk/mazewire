@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package modules;
+
+import "room/types.proto";
+
+option go_package = "github.com/dchenk/mazewire/pkg/room/modules";
+
+// A NavLink contains the information needed to render a navigation link.
+message NavLink {
+	string text = 1;
+	string href = 2;
+
+	// Target is either blank or something like "_blank".
+	string target = 3;
+}
+
+// A Nav is a collection of NavLinks.
+message Nav {
+	room.Common common = 1;
+	repeated NavLink links = 2;
+}
+
+// HTMLModule is a module that represents any kind of custom HTML. HTMLModule does not have a ModuleBuilder
+// implementation because its data is always static.
+message HTML {
+	string tag = 1;
+	string id_attr = 2;
+	bytes html = 3;
+}
+
+// Image is an image, optionally wrapped in an anchor (<a>) tag.
+message Image {
+	room.Common common = 1;
+	string src = 2;
+	string alt = 3;
+	string link_url = 4;
+}
+
+// Text is a rich text module created using Quill's Delta format (https://quilljs.com/docs/delta).
+message Text {
+	room.Common common = 1;
+	bytes ops = 2;
+}

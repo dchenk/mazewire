@@ -1,0 +1,7 @@
+.env
+main/env.go
+main/cert.go
+main/main
+pkg/darwin_amd64
+sql/datagen/gen_*
+cockroach-data

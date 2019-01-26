@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package pluginslist;
+
+import "plugins/internal/internal.proto";
+
+option go_package = "github.com/dchenk/mazewire/pkg/types/plugins_list";
+
+// A Status describes the status of a plugin registered with the main system or site.
+enum Status {
+	INACTIVE = 0;
+	ACTIVE = 1;
+}
+
+// A PluginsList contains a list of Identifier objects along with the status of each plugin.
+message PluginsList {
+	message Listing {
+		internal.Registration plugin = 1;
+		Status status = 2;
+	}
+	repeated Listing list = 1;
+}

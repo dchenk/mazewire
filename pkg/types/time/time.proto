@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package time;
+
+option go_package = "github.com/dchenk/mazewire/pkg/types/time";
+
+// A Time is a point in time, represented as the number of seconds and nanoseconds
+// since the Unix Epoch of January 1, 1970 UTC.
+//
+// The valid range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z.
+message Time {
+	// Seconds is the number of seconds since 1970-01-01T00:00:00Z.
+	int64 seconds = 1;
+
+	// Nanos is the number of nanoseconds since the time identified by the seconds.
+	// Negative second values with fractions must still have non-negative nanos values
+	// that count forward in time. The valid range is from 0 to 999,999,999, inclusive.
+	int32 nanos = 2;
+}

@@ -1,0 +1,198 @@
+syntax = "proto3";
+
+package data;
+
+import "types/time/time.proto";
+
+option go_package = "github.com/dchenk/mazewire/pkg/data";
+
+// A Site is the basic settings of a site, except for the time when the site was created.
+// Everything else that shapes a site is in either an Option or a Blob.
+message Site {
+	// Row ID in the table.
+	int64 id = 1;
+
+	// The domain (no slashes; possibly includes sub-domain).
+	string domain = 2;
+
+	// The name of the website.
+	string name = 3;
+
+	// The URL of the main logo file.
+	string logo = 4;
+
+	// The URL of the favicon file.
+	string favicon = 5;
+
+	// The status of the TLS on the domain: 0 = none, 1 = configuring, 2 = good
+	uint32 tls = 6;
+}
+
+// A Blob is a general-use container for binary data.
+message Blob {
+	// Row ID in the table.
+	int64 id = 1;
+
+	// General field to specify what kind of blob this is.
+	string role = 2;
+
+	// Key to connect the Blob with content (not an actual foreign key).
+	int64 k = 3;
+
+	// The data.
+	bytes v = 4;
+
+	// Time of the last update.
+	time.Time updated = 5;
+}
+
+// A Content is piece of the content of an email body. Each email must have at least one Content.
+message Content {
+	// Row ID in the table.
+	int64 id = 1;
+
+	// Site ID that the content is part of.
+	int64 site = 2;
+
+	// Valid URL path part with no slashes.
+	string slug = 3;
+
+	// The ID of the author.
+	int64 author = 4;
+
+	// The general type of the content, such as "page" or "post".
+	string type = 5;
+
+	// Either 0 or the ID of the parent in the same table.
+	int64 parent = 6;
+
+	// Title for displaying.
+	string title = 7;
+
+	// Title to give in an HTML meta tag; optional but not null.
+	string meta_title = 8;
+
+	// Description to give in an HTML meta tag; optional but not null.
+	string meta_desc = 9;
+
+	// Either blank or the published (and compiled) body, cached for quick loading.
+	bytes body = 10;
+
+	// Publication status is one of 'draft', 'published', 'unsaved', or 'trashed';
+	// defaults to 'draft' in the database.
+	string status = 11;
+
+	// Time of the last update.
+	time.Time updated = 12;
+}
+
+// A User contains all the basic info of registered a user.
+message User {
+	// Row ID in the table.
+	int64 id = 1;
+
+	// Username.
+	string uname = 2;
+
+	// Email address.
+	string email = 3;
+
+	// Password, already hashed.
+	bytes pass = 4;
+
+	// First name.
+	string fname = 5;
+
+	// Last name.
+	string lname = 6;
+
+	// The user's role in the site being accessed in the current request.
+	string role = 7;
+
+	// Time of the last update.
+	time.Time updated = 8;
+}
+
+// A UserMeta struct contains the key and value of a meta datum for a user (along with the timestamp of the
+// last update of the row). The rows in the database table are primary-keyed by both the user ID and the K.
+message UserMeta {
+	// UserId is a foreign key to a User ID.
+	int64 user_id = 1;
+	string k = 2;
+	bytes v = 3;
+
+	// Time of the last update.
+	time.Time updated = 4;
+}
+
+// An Option is a key => value pair holding a small amount of data for a site, the primary key being the
+// composite of the site ID and the value of K.
+message Option {
+	// Site is a foreign key to a Site ID.
+	int64 site = 1;
+	string k = 2;
+	bytes v = 3;
+}
+
+// A Media represents a static media item belonging to a website.
+//
+// The fields Id, Ext, Site, and Name are required; the other strings default to empty strings and must not
+// be null; the Uploaded time defaults to the current time in the database.
+message Media {
+	// A UUID encoded in base32 without padding.
+	string id = 1;
+
+	// File extension, starting with a dot if set; optional but not null.
+	string ext = 2;
+
+	// Foreign key to a Site ID.
+	int64 site = 3;
+
+	// A user-given name.
+	string name = 4;
+
+	// HTML "alt" tag.
+	string alt = 5;
+
+	// A description.
+	string desc = 6;
+
+	// Time when the object was uploaded.
+	time.Time uploaded = 7;
+}
+
+// A SiteMessage is a notification message for a site, to be shown to all users whose role on the
+// site is at least Role.
+message SiteMessage {
+	// Row ID in the table.
+	int64 id = 1;
+
+	// SiteId is a foreign key to a Site ID.
+	int64 site_id = 2;
+
+	// Role is the mimum role a user must have to be shown the message.
+	string role = 3;
+
+	// K is a key to identify the message.
+	string k = 4;
+	string message = 5;
+
+	// Time when the message was created.
+	time.Time created = 6;
+}
+
+// A UserMessage is a notification message for a user.
+message UserMessage {
+	// Row ID in the table.
+	int64 id = 1;
+
+	// UserId is a foreign key to a User ID.
+	int64 user_id = 2;
+
+	// K is a key to identify the message.
+	string k = 3;
+	string message = 4;
+
+	// Time when the message was created.
+	time.Time created = 5;
+}

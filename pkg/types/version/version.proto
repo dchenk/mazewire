@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package version;
+
+option go_package = "github.com/dchenk/mazewire/pkg/types/version";
+
+// Version is a semantic versioning version of a module.
+message Version {
+	uint32 major = 1;
+	uint32 minor = 2;
+	uint32 patch = 3;
+}

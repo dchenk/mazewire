@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package instance;
+
+import "types/time/time.proto";
+
+option go_package = "github.com/dchenk/mazewire/pkg/instance";
+
+// A Status describes the status of a server instance in a cluster.
+enum Status {
+	GOOD = 0;
+	UNKNOWN = 2;
+	STOPPING = 3;
+	STOPPED = 4;
+}
+
+// An Instance is a server instance in a cluster.
+message Instance {
+	// Id is a unique identifier of the instance, typically assigned by the underlying
+	// server system in which the instance is running.
+	string id = 1;
+
+	// Name is a name of the instance, typically assigned by the underlying server system
+	// unless specified by a user upon creation of the instance.
+	string name = 2;
+
+	// Status describes the status of the instance.
+	Status status = 3;
+
+	// Address is a network address (e.g., IP addres or host name), without a trailing
+	// slash, by which the instance may be reached using HTTPS over TCP to access the
+	// system API.
+	string address = 4;
+
+	// LogName is the name of the log in which the instance writes its log entries.
+	string log_name = 5;
+
+	// Joined is the time at which the instance joined the cluster.
+	time.Time joined = 6;
+
+	// Zone specifies where the instance is running; this field may be blank and is used
+	// only as metadata for the system administrator.
+	string zone = 7;
+}

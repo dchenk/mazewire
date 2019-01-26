@@ -1,0 +1,76 @@
+/* This file contains the basic layout structuring CSS for room-compiled page tree structures. */
+
+body {
+	margin: 0;
+}
+
+.room-section {
+	margin: 0;
+	padding: 50px 0;
+}
+
+.room-section.standard {
+	width: 1100px; /* TODO: this should be set dynamically and externally */
+	margin: 0 auto;
+}
+
+.room-section.fullwidth {
+	width: 100%; /* Being explicit. */
+}
+
+/*.main-body > section.jmsection { !* An inner jmsection must have margins on the sides (for on narrow screens). *!*/
+	/*max-width: 94%; !* This value is adjustable for each website. *!*/
+/*}*/
+
+.room-row {
+	display: flex;
+	margin: 0;
+	padding: 10px 0;
+	justify-content: space-between;
+}
+
+.room-row > .column {
+	vertical-align: top;
+	box-sizing: border-box;
+}
+
+.room-row.full > .column {
+	width: 100%;
+}
+
+.room-row.halfhalf > .column {
+	width: 49%; /* (100 - 2) / 2 */
+}
+
+.room-row.thirdthirdthird > .column {
+	width: 32%; /* (100 - (2*2)) / 3 */
+}
+
+.room-row.thirdtwothirds > .column:first-child,
+.room-row.twothirdsthird > .column:last-child{
+	width: 32.6666%; /* (100 - 2) / 3 */
+}
+
+.room-row.thirdtwothirds > .column:last-child,
+.room-row.twothirdsthird > .column:first-child {
+	width: 65.3333%; /* (100 - 2) * (2/3) */
+}
+
+.room-row.quarterquarterquarterquarter > .column {
+	width: 23.6125%; /* (100 - (1.85*3)) / 4 */
+}
+
+.room-row.quarterquarterhalf > .column:first-child,
+.room-row.quarterquarterhalf > .column:nth-child(2),
+.room-row.quarterhalfquarter > .column:first-child,
+.room-row.quarterhalfquarter > .column:last-child,
+.room-row.halfquarterquarter > .column:nth-child(2),
+.room-row.halfquarterquarter > .column:last-child {
+	width: 24%; /* (100 - (2*2)) * (1/4) / */
+}
+
+.room-row.quarterquarterhalf > .column:last-child,
+.room-row.quarterhalfquarter > .column:nth-child(2),
+.room-row.halfquarterquarter > .column:first-child {
+	width: 48%; /* (100 - (2*2)) * (1/2) / */
+}

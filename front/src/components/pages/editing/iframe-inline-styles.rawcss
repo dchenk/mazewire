@@ -1,0 +1,65 @@
+body:not(:hover) .room-edit-control {
+	display: none;
+}
+
+.room-edit-control {
+	border: none;
+	background: none;
+	padding: 0;
+	cursor: pointer;
+}
+
+.room-edit-control svg {
+	vertical-align: top;
+	cursor: pointer;
+}
+
+.room-edit-control:focus {
+	outline: none;
+}
+
+.room-add-button {
+	position: absolute;
+}
+
+#no-room-elements {
+	margin: 25px;
+	height: 150px;
+	box-sizing: border-box;
+	border: 1px dashed #757575;
+	font-family: sans-serif;
+	border-radius: 7px;
+	background-color: #EEEEEE;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#no-room-elements strong {
+	margin-right: 12px;
+}
+
+button.add-section-empty {
+	font-family: inherit;
+	padding: 9px 14px;
+	background: none;
+	border: 1px solid #757575;
+	border-radius: 3px;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.room-section > button.move-section {
+	display: none;
+	position: absolute;
+}
+
+.room-section:hover > button.move-section {
+	display: block;
+	z-index: 9999;
+	transform: translateY(-100%);
+}
+
+.room-section:hover {
+	background-color: gainsboro; /* temporary */
+}

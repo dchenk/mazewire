@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Admin</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:300,400,400i,600,700">
+	<script>
+		// activeSite gets default values for development.
+		window.activeSite = {id: 1, domain: "localhost:8080", name: "Main Site", logo: "", favicon: "http://localhost:8080/assets/dash-logo-icon.svg", role: "admin"};
+
+		// userInfo gets default values for development.
+		window.userInfo={id: 1, fname: "TheFirst", lname: "SomeLast", img: ""};
+
+		// Allow overriding the user's role from the URL query parameter "role".
+		const roleR = new RegExp(/role=([^&]*)/);
+		const roleMatch = roleR.exec(window.location.search);
+		if (roleMatch && roleMatch[1] !== "") {
+			window.activeSite.role = roleMatch[1]
+		}
+	</script>
+</head>
+<body>
+	<div id="app"></div>
+	<!-- built files will be auto injected -->
+</body>
+</html>

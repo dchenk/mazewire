@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+// This file contains definitions of the payloads used by hook handlers.
+//
+// Built-in hooks have concrete payload types defined here, and
+//   (a) their hook handlers may assume that the concrete type of the proto.Message given to
+//       them to handle has the corresponding type defined here; and
+//   (b) the functions that call Do with such a built-in hook may assume that the proto.Message
+//       response they get has the associated concrete response type as defined here.
+
+package payloads;
+
+option go_package = "github.com/dchenk/mazewire/pkg/hooks/payloads";
+
+// Custom is a container for payloads used by all custom hooks.
+message Custom {
+	bytes data = 1;
+}

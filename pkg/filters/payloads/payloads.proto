@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+// This file contains definitions of the payloads used by filter handlers.
+//
+// Built-in filters have concrete payload types defined here; filter handlers may assume that the concrete
+// type of the proto.Message given to them to handle is defined here, which is the same type of the response
+// message filters return.
+
+package payloads;
+
+option go_package = "github.com/dchenk/mazewire/pkg/filters/payloads";
+
+// Custom is a container for payloads used by all custom hooks.
+message Custom {
+	bytes data = 1;
+}
+
+// UserCSS is the payload given to hook handlers of the UserCSS hook.
+message UserCSS {
+	string code = 1;
+}
+
+// UserJS is the payload given to hook handlers of the UserJS hook.
+message UserJS {
+	string code = 1;
+}
