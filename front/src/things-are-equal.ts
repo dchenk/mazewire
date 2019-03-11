@@ -1,4 +1,4 @@
-export const thingsAreEqual = function(a, b) {
+export const thingsAreEqual = (a: any, b: any) => {
 
 	const easyTypes = ["string", "number", "boolean", "undefined"]
 
@@ -14,11 +14,11 @@ export const thingsAreEqual = function(a, b) {
 	}
 
 	// Create an array of property names.
-	let aKeys = Object.keys(a);
+	const aKeys = Object.keys(a)
 
 	// Check the number of properties in each thing.
 	if (aKeys.length !== Object.keys(b).length) {
-		return false;
+		return false
 	}
 
 	for (let i = 0, l = aKeys.length; i < l; i++) {
@@ -27,6 +27,6 @@ export const thingsAreEqual = function(a, b) {
 		}
 	}
 
-	return true;
+	return true
 
 }

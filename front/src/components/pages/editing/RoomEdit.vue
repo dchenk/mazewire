@@ -1,11 +1,15 @@
 <template>
 	<div id="page-editor" :class="{'preview-mode': previewing}">
-		<div id="page-edit-preview"><button @click="previewMode" v-if="!previewing" v-html="Preview"/><button @click="exitPreviewMode" v-if="previewing" v-html="Close"/></div>
+		<div id="page-edit-preview">
+			<button @click="previewMode" v-if="!previewing" v-html="Preview" /><button @click="exitPreviewMode" v-if="previewing" v-html="Close" />
+		</div>
 		<div id="editor-wrap">
 			<i-frame name="editing-frame" id="editing-frame" :node-name="'div'" node-i-d="page-content" :styles="editorIframeStyles" @rendered="treeRendered">
-				<room-section v-for="(section, sectionIndx) in tree" :key="sectionIndx" v-bind="section" :tree-index="sectionIndx" :previewing="previewing" @positionSection="positionSectionControls"/>
+				<room-section v-for="(section, sectionIndx) in tree" :key="sectionIndx" v-bind="section" :tree-index="sectionIndx" :previewing="previewing" @positionSection="positionSectionControls" />
 				<div v-if="tree.length === 0 && !previewing" id="no-room-elements">
-					<strong>The page is empty</strong><button @click="addSection(0)" class="add-section-empty">ADD SECTION</button>
+					<strong>The page is empty</strong><button @click="addSection(0)" class="add-section-empty">
+						ADD SECTION
+					</button>
 				</div>
 			</i-frame>
 		</div>

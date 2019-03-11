@@ -1,6 +1,8 @@
 <template>
 	<div id="module-html-editor">
-		<div class="ace-editor-container"><div id="html-editor" class="ace-editor-inner"/></div>
+		<div class="ace-editor-container">
+			<div id="html-editor" class="ace-editor-inner" />
+		</div>
 	</div>
 </template>
 

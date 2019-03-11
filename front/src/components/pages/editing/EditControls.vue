@@ -1,7 +1,7 @@
 <template>
 	<div>
-		<button class="page-edit-icon room-edit-control" v-html="EditPencil"/>
-		<button class="page-edit-icon room-edit-control" v-html="Drag"/>
+		<button class="page-edit-icon room-edit-control" v-html="EditPencil" />
+		<button class="page-edit-icon room-edit-control" v-html="Drag" />
 	</div>
 </template>
 

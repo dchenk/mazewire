@@ -7,6 +7,8 @@ import PagesPosts from "./components/pages/PagesPosts.vue"
 
 import PageEdit from "./components/pages/editing/PageEdit.vue"
 
+import AdminSrcs from "./components/super-settings/AdminSrcs.vue"
+
 // import PostSettings from "./components/posts/Settings.vue"
 
 // import Media from "./components/media/Media.vue"
@@ -23,41 +25,38 @@ import PageEdit from "./components/pages/editing/PageEdit.vue"
 
 // import Help from "./components/help/Help.vue"
 
-// Extra settings for super admins
-import AdminSrcs from "./components/super-settings/AdminSrcs.vue"
-
-Vue.use(Router);
+Vue.use(Router)
 
 export default new Router({
 	routes: [
 		{
 			path: "/",
-			component: Dashboard
+			component: Dashboard,
 		},
 		{
 			path: "/pages",
 			component: PagesPosts,
-			props: {pType: "page"}
+			props: {pType: "page"},
 		},
 		{
 			path: "/pages/trash",
 			component: PagesPosts,
-			props: {pType: "page", trashed: true}
+			props: {pType: "page", trashed: true},
 		},
 		{
 			path: "/pages/edit/:ppId",
 			component: PageEdit,
-			name: "page_editor"
+			name: "page_editor",
 		},
 		{
 			path: "/posts",
 			component: PagesPosts,
-			props: {pType: "post"}
+			props: {pType: "post"},
 		},
 		{
 			path: "/posts/trash",
 			component: PagesPosts,
-			props: {pType: "post", trashed: true}
+			props: {pType: "post", trashed: true},
 		},
 		// {
 		// 	path: "/posts/settings",
@@ -65,8 +64,8 @@ export default new Router({
 		// },
 		{
 			path: "/posts/edit/:ppId",
-			component: PageEdit,
-			name: "post_editor"
+			component: () => import("./components/pages/editing/PageEdit.vue"),
+			name: "post_editor",
 		},
 		// {
 		// 	path: "/media",
@@ -106,9 +105,9 @@ export default new Router({
 		// },
 		{
 			path: "/srcs",
-			component: AdminSrcs
-		}
+			component: AdminSrcs,
+		},
 	],
 	mode: "history",
-	base: "/admin/"
+	base: "/admin/",
 })

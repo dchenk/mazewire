@@ -1,21 +1,20 @@
 <template>
 	<div id="edit-section-dialog">
+		<elem-name ref="customName" />
 
-		<elem-name ref="customName"/>
-
-		<style-editor elem_type="section" ref="styling"/>
+		<style-editor elem_type="section" ref="styling" />
 
 		<template v-if="elemType === 'section'">
 			<h6>Section Width Type</h6>
 			<div class="two-radio-options">
 				<div class="bttn-holder">
 					<input class="material-radio" type="radio" value="standard" id="sec-standard" name="sec_type" v-model="secType">
-					<label for="sec-standard"><span class="radio-circle material-icons"/>Standard Section</label>
+					<label for="sec-standard"><span class="radio-circle material-icons" />Standard Section</label>
 				</div>
 
 				<div class="bttn-holder">
 					<input class="material-radio" type="radio" value="fullwidth" id="sec-fullwidth" name="sec_type" v-model="secType">
-					<label for="sec-fullwidth"><span class="radio-circle material-icons"/>Full-Width Section</label>
+					<label for="sec-fullwidth"><span class="radio-circle material-icons" />Full-Width Section</label>
 				</div>
 			</div>
 		</template>
@@ -24,7 +23,7 @@
 
 		<h6>Custom CSS Styling</h6>
 		<div class="ace-editor-container">
-			<div id="elem-css-editor" class="ace-editor-inner"/>
+			<div id="elem-css-editor" class="ace-editor-inner" />
 		</div>
 
 		<hr>
@@ -40,7 +39,6 @@
 			<input type="text" class="dyn-textfield-input" id="sec-css-id" v-model="cssID">
 			<label for="sec-css-id" class="dyn-textfield-label">CSS ID</label>
 		</div>
-
 	</div>
 </template>
 

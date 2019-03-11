@@ -1,6 +1,8 @@
 <template>
 	<div id="login-dialog">
-		<p class="err-message" v-if="errMsg !== ''">{{ errMsg }}</p>
+		<p class="err-message" v-if="errMsg !== ''">
+			{{ errMsg }}
+		</p>
 		<div class="dyn-textfield">
 			<input type="text" class="dyn-textfield-input" id="login-user" @keyup.enter="$parent.accept" v-model="user">
 			<label for="login-user" class="dyn-textfield-label">Username or Email</label>

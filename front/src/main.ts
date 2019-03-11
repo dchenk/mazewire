@@ -1,9 +1,9 @@
 import Vue from "vue"
 import App from "./App.vue"
-import router from "./router.js"
+import router from "./router.ts"
 import msgpack from "msgpack-lite/lib/browser.js"
 import Toasted from "vue-toasted"
-import {hexEncode} from "./hex-encode.js"
+import {hexEncode} from "./hex-encode"
 
 import "./style.css"
 
@@ -23,7 +23,11 @@ import "codemirror/mode/htmlmixed/htmlmixed.js"
 
 import "./editor-theme.css"
 
-import {dateExtPrefix, msgpUnpackDate, msgpPackDate} from "./msgp-date.js"
+import {dateExtPrefix, msgpPackDate, msgpUnpackDate} from "./msgp-date.js"
+// Files with the ".rawcss" extension may belong either just to the page editing iframe component or also
+// also in the main app. The following mainAndIframeCSS array lists the CSS files that should be used in
+// the main app. These files are not pre-processed by an CSS tool (TODO: should they be?).
+import layoutsCSS from "./layouts.rawcss"
 
 const MessagePackCodec = msgpack.createCodec({
 	uint8array: true
@@ -34,10 +38,6 @@ MessagePackCodec.addExtUnpacker(dateExtPrefix, msgpUnpackDate)
 MessagePackCodec.addExtPacker(dateExtPrefix, Date, msgpPackDate)
 
 
-// Files with the ".rawcss" extension may belong either just to the page editing iframe component or also
-// also in the main app. The following mainAndIframeCSS array lists the CSS files that should be used in
-// the main app. These files are not pre-processed by an CSS tool (TODO: should they be?).
-import layoutsCSS from "./layouts.rawcss"
 const mainAndIframeCSS = [layoutsCSS]
 
 mainAndIframeCSS.forEach(function(elem) {
@@ -105,7 +105,8 @@ let doingAuthStep = false
 
 // $req makes an API request. The handleGood argument should be a function that handles the decoded response.
 // The handleError argument is optional: authentication and server errors and alerts are handled by $req.
-Vue.prototype.$req = function(method, endpoint, data, handleGood, handleError = () => {}) {
+Vue.prototype.$req = function(method, endpoint, data, handleGood, handleError = () => {
+}) {
 
 	this.$showLoader()
 
@@ -130,10 +131,10 @@ Vue.prototype.$req = function(method, endpoint, data, handleGood, handleError = 
 			// The endpoint URL may already have a "?" if this is a retry request, which means the hex-encoded data
 			// is already part of the URL.
 			if (!endpoint.includes("?")) {
-				endpoint += "?data="+hexEncode(dataEncoded)
+				endpoint += "?data=" + hexEncode(dataEncoded)
 			}
 		} else {
-			opts.headers = new Headers({"Content-Type" : "application/x-msgpack"})
+			opts.headers = new Headers({"Content-Type": "application/x-msgpack"})
 			opts.body = dataEncoded
 		}
 	}
@@ -144,7 +145,7 @@ Vue.prototype.$req = function(method, endpoint, data, handleGood, handleError = 
 		doingAuthStep = true
 	}
 
-	fetch(apiPath+endpoint, opts).then(resp => {
+	fetch(apiPath + endpoint, opts).then(resp => {
 		switch (resp.status) {
 			case 200:
 				resp.arrayBuffer().then(respData => {
@@ -156,7 +157,7 @@ Vue.prototype.$req = function(method, endpoint, data, handleGood, handleError = 
 					}
 					handleGood(respData.body)
 				}).catch(err => {
-					alert("An error occurred reading the response: "+err)
+					alert("An error occurred reading the response: " + err)
 				})
 				doingAuthStep = false
 				return
@@ -192,16 +193,16 @@ Vue.prototype.$req = function(method, endpoint, data, handleGood, handleError = 
 		// The request could not be made because the browser blocked it or there is no internet connection.
 		let msg = err.message
 		if (msg !== "") {
-			msg = " ("+msg+")"
+			msg = " (" + msg + ")"
 		}
-		this.$toasted.error("Your request could not be made. Please check your internet connection."+msg)
+		this.$toasted.error("Your request could not be made. Please check your internet connection." + msg)
 		doingAuthStep = false
 	}).finally(this.$hideLoader.bind(this))
 
 }
 
 function caughtErrMessage(msg) {
-	return "An error occurred. ("+msg+")"
+	return "An error occurred. (" + msg + ")"
 }
 
 // The possible roles for registered users.

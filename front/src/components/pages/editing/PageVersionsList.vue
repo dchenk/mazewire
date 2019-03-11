@@ -3,7 +3,9 @@
 		<div v-if="versions.length > 0">
 			<h5>Page Versions</h5>
 			<ul>
-				<li v-for="ver in versions" @click="showOldVersion(ver.id)">{{ ver.ts.toLocaleDateString() + " " + ver.ts.toLocaleTimeString() }}</li>
+				<li v-for="ver in versions" @click="showOldVersion(ver.id)">
+					{{ ver.ts.toLocaleDateString() + " " + ver.ts.toLocaleTimeString() }}
+				</li>
 			</ul>
 		</div>
 	</div>

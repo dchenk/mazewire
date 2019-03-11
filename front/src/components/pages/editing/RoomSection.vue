@@ -1,7 +1,7 @@
 <template>
 	<section :class="['room-section', 'section-'+type]">
 		type: {{ type }} <br>Rows: {{ rows }}
-		<button class="move-section room-edit-control" v-if="!previewing" v-html="Drag"/>
+		<button class="move-section room-edit-control" v-if="!previewing" v-html="Drag" />
 	</section>
 </template>
 

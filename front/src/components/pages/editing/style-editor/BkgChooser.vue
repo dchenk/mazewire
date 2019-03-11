@@ -3,20 +3,22 @@
 		<div class="bkg-type-option">
 			<div>
 				<input class="material-radio" type="radio" value="color" id="bkgtype-color" name="bkg_type" v-model="bkgType">
-				<label for="bkgtype-color"><span class="radio-circle material-icons"/>Color</label>
+				<label for="bkgtype-color"><span class="radio-circle material-icons" />Color</label>
 			</div>
 			<div>
 				<div class="dyn-textfield">
 					<input type="text" class="dyn-textfield-input" id="bkg-color" v-model="bkgColor">
 					<label for="bkg-color" class="dyn-textfield-label">Background Color</label>
 				</div>
-				<div class="input-helper-info" v-if="bkgErr">The value should include the unit type: #/rgb/rgba/hsl/hsla</div>
+				<div class="input-helper-info" v-if="bkgErr">
+					The value should include the unit type: #/rgb/rgba/hsl/hsla
+				</div>
 			</div>
 		</div>
 		<div class="bkg-type-option">
 			<div>
 				<input class="material-radio" type="radio" value="img" id="bkgtype-img" name="bkg_type" v-model="bkgType">
-				<label for="bkgtype-img"><span class="radio-circle material-icons"/>Image</label>
+				<label for="bkgtype-img"><span class="radio-circle material-icons" />Image</label>
 			</div>
 			<div>
 				<div class="dyn-textfield">
@@ -25,9 +27,15 @@
 				</div>
 				<label for="img-bkg-size">Image Size:</label>
 				<select id="img-bkg-size" v-model="bkgSize">
-					<option value="cover">Cover</option>
-					<option value="contain">Contain Inside</option>
-					<option value="auto">Auto</option>
+					<option value="cover">
+						Cover
+					</option>
+					<option value="contain">
+						Contain Inside
+					</option>
+					<option value="auto">
+						Auto
+					</option>
 				</select>
 			</div>
 		</div>

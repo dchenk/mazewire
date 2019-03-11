@@ -1,33 +1,39 @@
 <template>
 	<div>
-		<page-meta @changeMade="unsavedChanges = true" @saveChanges="saveChanges" @publish="publish" :unsaved-changes="unsavedChanges" :ready-to-publish="readyToPublish" ref="meta"/>
-		<button @click="loadTemplate">USE TEMPLATE</button>
+		<page-meta @changeMade="unsavedChanges = true" @saveChanges="saveChanges" @publish="publish"
+			:unsaved-changes="unsavedChanges" :ready-to-publish="readyToPublish" ref="meta"/>
+		<button @click="loadTemplate">
+			USE TEMPLATE
+		</button>
 		<room-edit @changeMade="unsavedChanges = true" :tree-got="tree" :user-c-s-s="userCSS"/>
 		<page-versions-list :versions="versions"/>
 	</div>
 </template>
 
 <script>
+	import Vue from "vue"
 	import PageMeta from "./PageMeta"
 	import RoomEdit from "./RoomEdit"
 	import PageVersionsList from "./PageVersionsList"
 
-	export default {
+	export default Vue.extend({
 		components: {
 			PageMeta,
 			RoomEdit,
 			PageVersionsList
 		},
-		data() { return {
-			pagepost: null,
-			tree: [],
-			dynData: null,
-			versions: [],
-			userCSS: "", // User's custom CSS (used in page meta component).
+		data() {
+			return {
+				pagepost: null,
+				tree: [],
+				dynData: null,
+				versions: [],
+				userCSS: "", // User's custom CSS (used in page meta component).
 
-			unsavedChanges: false,
-			readyToPublish: false,
-		}},
+				unsavedChanges: false,
+				readyToPublish: false
+			}
+		},
 		created() {
 			this.$req("GET", "page-edit", {page: Number(this.$route.params.ppId)},
 				resp => {
@@ -80,8 +86,5 @@
 				)
 			}
 		}
-	}
+	})
 </script>
-
-<style>
-</style>

@@ -11,20 +11,34 @@
 				<div class="dyn-textfield">
 					<input type="text" id="pg-slug" class="dyn-textfield-input required notempty" :class="{'not-set':!slugOk}" :disabled="isHomePage" v-model="pagepost.content.slug">
 					<label for="pg-slug" class="dyn-textfield-label">URL slug</label>
-					<div id="homepage-options" v-if="isHomePage"><span>(Homepage)</span> <button @click="showHomepageOptions">Change Homepage</button></div>
+					<div id="homepage-options" v-if="isHomePage">
+						<span>(Homepage)</span> <button @click="showHomepageOptions">
+							Change Homepage
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
 		<div class="meta-value">
-			<button class="material-bttn material-bttn-raised has-icon" @click="moreMetaOptions"><span class="material-icons">menu</span>More Page Options</button>
+			<button class="material-bttn material-bttn-raised has-icon" @click="moreMetaOptions">
+				<span class="material-icons">menu</span>More Page Options
+			</button>
 		</div>
 		<h5>Page status: {{ pagepost.content.status }}</h5>
-		<button class="material-bttn material-bttn-raised" :disabled="!unsavedChanges" @click="$emit('saveChanges')">Save Changes</button>
-		<button class="material-bttn material-bttn-raised" :disabled="!readyToPublish" @click="$emit('publish')">Publish Page</button>
+		<button class="material-bttn material-bttn-raised" :disabled="!unsavedChanges" @click="$emit('saveChanges')">
+			Save Changes
+		</button>
+		<button class="material-bttn material-bttn-raised" :disabled="!readyToPublish" @click="$emit('publish')">
+			Publish Page
+		</button>
 		<div class="page-css-editing">
-			<button class="material-bttn material-bttn-raised smaller" v-show="!showingCssEditor" @click="showPageCssEditor">Show CSS Editor</button>
-			<button class="material-bttn material-bttn-raised smaller" v-show="showingCssEditor" @click="showingCssEditor = false">Hide CSS Editor</button>
-			<codemirror ref="cssEditor" :class="{'css-editor-expanded': showingCssEditor}" :value="userCSS" :options="{mode: 'text/css'}" @input="getChangedCSS"/>
+			<button class="material-bttn material-bttn-raised smaller" v-show="!showingCssEditor" @click="showPageCssEditor">
+				Show CSS Editor
+			</button>
+			<button class="material-bttn material-bttn-raised smaller" v-show="showingCssEditor" @click="showingCssEditor = false">
+				Hide CSS Editor
+			</button>
+			<codemirror ref="cssEditor" :class="{'css-editor-expanded': showingCssEditor}" :value="userCSS" :options="{mode: 'text/css'}" @input="getChangedCSS" />
 		</div>
 	</div>
 </template>

@@ -1,12 +1,18 @@
 <template>
 	<div class="dialog-overlay">
 		<div class="dialog-inner" id="main-dialog">
-			<h5 v-show="title !== ''">{{ title }}</h5>
-			<component ref="dialogChild" :is="componentName" v-if="componentName !== ''" v-bind="componentOptions"/>
-			<div v-else-if="innerHTML !== ''" v-html="innerHTML"/>
+			<h5 v-show="title !== ''">
+				{{ title }}
+			</h5>
+			<component ref="dialogChild" :is="componentName" v-if="componentName !== ''" v-bind="componentOptions" />
+			<div v-else-if="innerHTML !== ''" v-html="innerHTML" />
 			<div class="dialog-buttons">
-				<button class="dialog-reject material-bttn" v-if="rejectText !== 'N/A'" @click="hideAndCancel">{{ rejectText || "CANCEL" }}</button>
-				<button class="dialog-accept material-bttn" @click="accept">{{ acceptText || "ACCEPT" }}</button>
+				<button class="dialog-reject material-bttn" v-if="rejectText !== 'N/A'" @click="hideAndCancel">
+					{{ rejectText || "CANCEL" }}
+				</button>
+				<button class="dialog-accept material-bttn" @click="accept">
+					{{ acceptText || "ACCEPT" }}
+				</button>
 			</div>
 		</div>
 	</div>

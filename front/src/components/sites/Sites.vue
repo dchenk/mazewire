@@ -2,10 +2,14 @@
 	<div>
 		<h6>Switch to another site</h6>
 		<ul id="sites-list">
-			<li v-for="us in userSites"><a :href="us.domain" target="_blank"><img :src="siteIcon(us)">{{ us.name }}</a> (Role: {{ us.role }})</li>
+			<li v-for="us in userSites">
+				<a :href="us.domain" target="_blank"><img :src="siteIcon(us)">{{ us.name }}</a> (Role: {{ us.role }})
+			</li>
 		</ul>
 		<h6>Create a new site</h6>
-		<button class="material-bttn material-bttn-raised bkg-primary" @click="createSite">CREATE SITE</button>
+		<button class="material-bttn material-bttn-raised bkg-primary" @click="createSite">
+			CREATE SITE
+		</button>
 	</div>
 </template>
 

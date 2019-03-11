@@ -1,25 +1,41 @@
 <template>
 	<div id="pages-posts">
-		<button v-if="!trashed" class="material-bttn material-bttn-raised bkg-primary" @click="showCreateDialog">CREATE NEW {{ pType.toUpperCase() }}</button>
-		<h5 v-if="ppList.length === 0">(No {{ pType }}s yet)</h5>
+		<button v-if="!trashed" class="material-bttn material-bttn-raised bkg-primary"
+			@click="showCreateDialog">
+			CREATE NEW {{ pType.toUpperCase() }}
+		</button>
+		<h5 v-if="ppList.length === 0">
+			(No {{ pType }}s yet)
+		</h5>
 		<ul class="pagepost-list">
 			<li v-for="pp in ppList" class="material-card">
 				<div class="pp-parent">
 					<router-link :to="pType+'s/edit/'+pp.content.id | linkSlug" class="edit-link">
-						<h6>{{ pp.content.title }}<span class="draft-unsaved-status" v-if="pp.content.status === 'draft'"> (Draft)</span>
-							<span class="draft-unsaved-status" v-else-if="pp.content.status === 'unsaved'"> (Unpublished Changes)</span>
+						<h6>
+							{{ pp.content.title }}<span class="draft-unsaved-status"
+							v-if="pp.content.status === 'draft'"> (Draft)</span>
+							<span class="draft-unsaved-status"
+								v-else-if="pp.content.status === 'unsaved'"> (Unpublished Changes)</span>
 						</h6>
 					</router-link>
-					<a :href="pp.content.slug | linkSlug" target="_blank" class="preview-link"><div class="material-icons">open_in_new</div></a>
+					<a :href="pp.content.slug | linkSlug" target="_blank" class="preview-link">
+						<div class="material-icons">open_in_new</div>
+					</a>
 				</div>
 				<div class="pp-children" v-if="pp.children">
 					<div v-for="ppchild in pp.children" class="pp-child">
 						<router-link :to="pType+'s/edit/'+ppchild.id | linkSlug" class="edit-link">
-							<h6>&nbsp;&mdash; {{ ppchild.content.title }}<span class="draft-unsaved-status" v-if="pp.content.status === 'draft'"> (Draft)</span>
-								<span class="draft-unsaved-status" v-else-if="pp.content.status === 'unsaved'"> (Unpublished Changes)</span>
+							<h6>
+								&nbsp;&mdash; {{ ppchild.content.title }}<span
+								class="draft-unsaved-status" v-if="pp.content.status === 'draft'"> (Draft)</span>
+								<span class="draft-unsaved-status"
+									v-else-if="pp.content.status === 'unsaved'"> (Unpublished Changes)</span>
 							</h6>
 						</router-link>
-						<a :href="ppchild.content.slug | linkSlug" target="_blank" class="preview-link"><div class="material-icons">open_in_new</div></a>
+						<a :href="ppchild.content.slug | linkSlug" target="_blank"
+							class="preview-link">
+							<div class="material-icons">open_in_new</div>
+						</a>
 					</div>
 				</div>
 			</li>
@@ -32,12 +48,15 @@
 
 <script>
 
+	import Vue from "vue"
 	import {MDCRipple} from "@material/ripple"
 
-	export default {
+	export default Vue.extend({
 		filters: {
 			linkSlug(slug) {
-				if (slug.substr(0, 1) === "/") { return slug }
+				if (slug.substr(0, 1) === "/") {
+					return slug
+				}
 				return "/" + slug
 			}
 		},
@@ -51,11 +70,13 @@
 				default: false
 			}
 		},
-		data() { return {
-			ppList: [],
-			pagesTotal: 0,
-			offset: 0
-		}},
+		data() {
+			return {
+				ppList: [],
+				pagesTotal: 0,
+				offset: 0
+			}
+		},
 		watch: {
 			pType: function() {
 				this.refreshList()
@@ -75,7 +96,11 @@
 		},
 		methods: {
 			refreshList() {
-				this.$req("GET", "pagepost", {pp_type: this.pType, offset: this.offset, trashed: this.trashed},
+				this.$req("GET", "pagepost", {
+						pp_type: this.pType,
+						offset: this.offset,
+						trashed: this.trashed
+					},
 					resp => {
 						this.ppList = resp.items
 					}
@@ -93,8 +118,8 @@
 					acceptText: "CREATE"
 				})
 			}
-		},
-	}
+		}
+	})
 
 </script>
 

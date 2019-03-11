@@ -1,7 +1,7 @@
 <template>
 	<ul id="styles-editor">
 		<li v-for="(property, propIndx) in styling">
-			<h6 class="prop-help" v-if="property.help !== undefined" v-html="property.help"/>
+			<h6 class="prop-help" v-if="property.help !== undefined" v-html="property.help" />
 			<template v-if="property.type === 'text'">
 				<div class="dyn-textfield">
 					<input type="text" class="dyn-textfield-input" :id="property.prop_key+op.val" v-model="styling[propIndx].val">
@@ -12,16 +12,18 @@
 				<h4>{{ property.name }}</h4>
 				<div v-for="op in property.opt">
 					<input type="radio" class="material-radio" :id="property.prop_key+op.val" :value="op.val" v-model="styling[propIndx].val">
-					<label :for="property.prop_key+op.val"><span class="radio-circle material-icons"/>{{ op.name }}</label>
+					<label :for="property.prop_key+op.val"><span class="radio-circle material-icons" />{{ op.name }}</label>
 				</div>
 			</template>
 			<template v-if="property.type === 'select'">
 				<h4>{{ property.name }}</h4>
 				<select v-model="styling[propIndx].val">
-					<option v-for="op in property.opt" :value="op.val">{{ op.name }}</option>
+					<option v-for="op in property.opt" :value="op.val">
+						{{ op.name }}
+					</option>
 				</select>
 			</template>
-			<div class="input-err" v-if="property.err !== undefined && property.invalid" v-html="property.err || 'Your input is invalid'"/>
+			<div class="input-err" v-if="property.err !== undefined && property.invalid" v-html="property.err || 'Your input is invalid'" />
 		</li>
 	</ul>
 </template>
@@ -42,11 +44,11 @@
 	export default {
 		name: "StyleEditor",
 		props: {
-			elem_type: {
+			elemType: {
 				type: String,
 				required: true
 			},
-			elem_sub_type: {
+			elemSubType: {
 				type: String,
 				default: "" // TODO: or require?
 			}

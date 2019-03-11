@@ -1,6 +1,8 @@
 <template>
 	<ul>
-		<li v-for="tmpl in templates" @click="chosenTemplate = tmpl.name"><h6>{{ tmpl.name }}</h6></li>
+		<li v-for="tmpl in templates" @click="chosenTemplate = tmpl.name">
+			<h6>{{ tmpl.name }}</h6>
+		</li>
 	</ul>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-	<div id="module-rich-text"/>
+	<div id="module-rich-text" />
 </template>
 
 <script>

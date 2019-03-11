@@ -1,14 +1,14 @@
 <template>
 	<div id="new-row-dialog">
-
 		<h6>Choose the kinds of columns this row will have</h6>
 
 		<ul id="col-types-list">
 			<li v-for="(columns, rowType) in rowTypes" class="room-row" :class="['row-'+rowType, {'selected-type': type === rowType}]" @click="type = rowType">
-				<div v-for="col in columns" class="column">{{ col }}</div>
+				<div v-for="col in columns" class="column">
+					{{ col }}
+				</div>
 			</li>
 		</ul>
-
 	</div>
 </template>
 

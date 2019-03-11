@@ -5,7 +5,9 @@
 				<div class="adjusted-for-toolbar">
 					<div id="current-site-switch">
 						<em>Currently editing:</em><b>{{ this.activeSite.name }}</b>
-						<button id="switch-site" class="material-bttn material-bttn-raised smaller" @click="switchSite"><span>Switch</span><span class="material-icons">arrow_drop_down</span></button>
+						<button id="switch-site" class="material-bttn material-bttn-raised smaller" @click="switchSite">
+							<span>Switch</span><span class="material-icons">arrow_drop_down</span>
+						</button>
 					</div>
 					<hr>
 					<router-link v-for="link in navLinks.slice(0, navLinks.length-2)" :key="link.path" v-if="link.role === undefined || $atLeastRole(link.role)" :to="'/'+link.path" @click.native="handleMainNavClick" :class="{'has-tabs': link.tabs !== undefined}">
@@ -20,39 +22,61 @@
 		</nav>
 		<header id="main-toolbar">
 			<div>
-				<div class="material-icons" id="main-menu-icon" @click="toggleTheNav" >menu</div>
+				<div class="material-icons" id="main-menu-icon" @click="toggleTheNav">
+					menu
+				</div>
 				<h4>{{ activePosition.name }}</h4>
-				<span v-if="loading" v-html="loadingIcon"/>
+				<span v-if="loading" v-html="loadingIcon" />
 			</div>
 			<!--<button id="dash-info" @click="showDashInfo"><img src="./assets/dash-logo-icon.svg"></button>--><!-- TODO: there needs to be a logo and a link to mazewire.com -->
 			<div id="user-info">
 				<span id="user-fname" @click="showProfileOptions">{{ userInfo.fname }}</span>
-				<button @click="showProfileOptions"><img :src="userImg"></button>
+				<button @click="showProfileOptions">
+					<img :src="userImg">
+				</button>
 			</div>
 		</header>
 		<div id="main">
 			<div class="adjusted-for-toolbar main-body">
 				<div id="section-tabs" class="dynamic-tabs" v-show="onTabbingPath">
-					<div class="dynamic-tab-arrow arrow-left"><div class="material-icons" aria-label="scroll left">navigate_before</div></div>
+					<div class="dynamic-tab-arrow arrow-left">
+						<div class="material-icons" aria-label="scroll left">
+							navigate_before
+						</div>
+					</div>
 					<div class="dynamic-tabs-framer">
 						<nav class="dynamic-tabs-list">
-							<router-link v-for="tab in allTabs" :key="tab.id" :to="'/'+tab.parentPath+(tab.path ? '/'+tab.path : '')" :id="tab.id" class="dynamic-tab">{{ tab.name }}</router-link>
+							<router-link v-for="tab in allTabs" :key="tab.id" :to="'/'+tab.parentPath+(tab.path ? '/'+tab.path : '')" :id="tab.id" class="dynamic-tab">
+								{{ tab.name }}
+							</router-link>
 						</nav>
-						<div class="dynamic-tabs-indicator"><div class="dt-indicator-bar"/></div>
+						<div class="dynamic-tabs-indicator">
+							<div class="dt-indicator-bar" />
+						</div>
 					</div>
-					<div class="dynamic-tab-arrow arrow-right"><div class="material-icons" aria-label="scroll right">navigate_next</div></div>
+					<div class="dynamic-tab-arrow arrow-right">
+						<div class="material-icons" aria-label="scroll right">
+							navigate_next
+						</div>
+					</div>
 				</div>
-				<router-view/>
+				<router-view />
 			</div>
-			<footer id="bottom-footer">Copyright &copy; 2017 Mazewire LLC</footer>
+			<footer id="bottom-footer">
+				Copyright &copy; 2017 Mazewire LLC
+			</footer>
 		</div>
 		<div id="user-popover" class="material-card" v-show="userInfoShowing">
 			<img :src="userImg">
 			<b>{{ userInfo.fname }} {{ userInfo.lname }}</b>
-			<router-link to="/account">Account Details</router-link>
-			<button @click="signOut" class="material-bttn">Sign Out</button>
+			<router-link to="/account">
+				Account Details
+			</router-link>
+			<button @click="signOut" class="material-bttn">
+				Sign Out
+			</button>
 		</div>
-		<DialogBox v-show="dialogActive" v-bind="dialogSetup"/>
+		<DialogBox v-show="dialogActive" v-bind="dialogSetup" />
 	</div>
 </template>
 

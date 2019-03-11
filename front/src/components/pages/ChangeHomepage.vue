@@ -1,6 +1,8 @@
 <template>
 	<div id="change-homepage">
-		<p class="err-message" v-if="errMsg !== ''">{{ errMsg }}</p>
+		<p class="err-message" v-if="errMsg !== ''">
+			{{ errMsg }}
+		</p>
 		<div class="dyn-textfield">
 			<input type="text" class="dyn-textfield-input" id="new-title" v-model="newPageTitle">
 			<label for="new-title" class="dyn-textfield-label">Page Title</label>
@@ -9,7 +11,9 @@
 			<input type="text" class="dyn-textfield-input" id="new-slug" @input="setCleanSlug" v-model="newPageSlug">
 			<label for="new-slug" class="dyn-textfield-label">URL Path Slug</label>
 		</div>
-		<div class="formatted-slug">https://{{ activeDomain }}/{{ newPageSlug }}</div>
+		<div class="formatted-slug">
+			https://{{ activeDomain }}/{{ newPageSlug }}
+		</div>
 	</div>
 </template>
 

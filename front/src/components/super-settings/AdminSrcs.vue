@@ -6,9 +6,13 @@
 		<b>JS App:</b> {{ currentSrcs["admin-app"] }}<br>
 		<b>JS Vendor:</b> {{ currentSrcs["admin-vendor"] }}<br>
 		<h4>New Versions</h4>
-		<textarea v-model="newSrcs"/><br>
-		<button type="button" @click="checkIfFilesExist">Check if files exist</button>
-		<button type="button" @click="update">Update</button>
+		<textarea v-model="newSrcs" /><br>
+		<button type="button" @click="checkIfFilesExist">
+			Check if files exist
+		</button>
+		<button type="button" @click="update">
+			Update
+		</button>
 	</div>
 </template>
 
