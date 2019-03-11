@@ -176,7 +176,7 @@ message SiteMessage {
 	// SiteId is a foreign key to a Site ID.
 	int64 site_id = 2;
 
-	// Role is the mimum role a user must have to be shown the message.
+	// Role is the minimum role a user must have to be shown the message.
 	string role = 3;
 
 	// K is a key to identify the message.

@@ -26,7 +26,7 @@ type ReqPagepostList struct {
 // authorized checks just if the user is at least an author on the current site. A further check needs to ensure
 // that the user can make changes to non-current sites.
 func (*ReqPagepostList) authorized(_ *http.Request, _ *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.RoleAuthor)
+	return users.RoleAtLeast(u.Role, users.Role_AUTHOR)
 }
 
 // List either pages or posts (for the admin area), paged by 20 results.
@@ -40,7 +40,7 @@ func (req *ReqPagepostList) handle(r *http.Request, s *data.Site, u *data.User) 
 			log.Err(r, "could not get logged in site role for user", err)
 			return errProcessing()
 		}
-		if !users.RoleAtLeast(role, users.RoleAuthor) {
+		if !users.RoleAtLeast(role, users.Role_AUTHOR) {
 			return errLowPrivileges()
 		}
 	}
@@ -59,7 +59,7 @@ func (req *ReqPagepostList) handle(r *http.Request, s *data.Site, u *data.User) 
 	// The authorCheck variable is 0 only if the user making this request has higher than author privileges,
 	// meaning that all pages/posts will be retrieved.
 	var authorCheck int64
-	if u.Role == users.RoleAuthor {
+	if u.Role == users.Role_AUTHOR {
 		authorCheck = u.Id
 	}
 
@@ -154,7 +154,7 @@ type ReqPagepostCreate struct {
 
 // authorized checks just if the user has at least author role on the current site.
 func (req *ReqPagepostCreate) authorized(_ *http.Request, _ *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.RoleAuthor)
+	return users.RoleAtLeast(u.Role, users.Role_AUTHOR)
 }
 
 // handle creates either a page or a post.
@@ -168,7 +168,7 @@ func (req *ReqPagepostCreate) handle(r *http.Request, s *data.Site, u *data.User
 			log.Err(r, "could not get logged in site role for user", err)
 			return errProcessing()
 		}
-		if !users.RoleAtLeast(role, users.RoleAuthor) {
+		if !users.RoleAtLeast(role, users.Role_AUTHOR) {
 			return errLowPrivileges()
 		}
 	}
@@ -241,7 +241,7 @@ type ReqPagepostMakeDynElem struct {
 
 // authorized says just if the user has at least author role on the current site.
 func (req *ReqPagepostMakeDynElem) authorized(r *http.Request, s *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.RoleAuthor)
+	return users.RoleAtLeast(u.Role, users.Role_AUTHOR)
 }
 
 func (req *ReqPagepostMakeDynElem) handle(r *http.Request, s *data.Site, u *data.User) *APIResponse {
@@ -299,7 +299,7 @@ func updateContentMeta(r *http.Request, u *data.User, s *data.Site, existing *da
 						return
 					}
 					// Check if the person who is supposed to be the new author has at least "author" role on the site.
-					if users.RoleAtLeast(newAuthor.Role, users.RoleAuthor) {
+					if users.RoleAtLeast(newAuthor.Role, users.Role_AUTHOR) {
 						includeCol = true
 					} else {
 						errs <- "The new author must have at least 'author' role on this site."

@@ -22,8 +22,9 @@ import (
 	"github.com/dchenk/mazewire/pkg/util"
 )
 
-// getCurrentUser sends a non-nil *data.User to chan c. If a real logged in user is behind the request, then the User struct
-// will be filled in with the basic info of the user and their role for the current site.
+// getCurrentUser sends a non-nil *data.User to chan c. If a real logged in user is behind the
+// request, then the User struct  will be filled in with the basic info of the user and their role
+// for the current site.
 func getCurrentUser(r *http.Request, c chan *userSite) {
 
 	us := &userSite{u: new(data.User)}
@@ -41,7 +42,7 @@ func getCurrentUser(r *http.Request, c chan *userSite) {
 	splitCookie := strings.Split(cookie.Value, ".")
 
 	if len(splitCookie) != 2 {
-		log.Err(r, userCookieErr(cookie.Value), errors.New("split cookie does not have two parts"))
+		log.Err(r, userCookieErr(cookie.Value), errors.New("cookie does not have two parts"))
 		return
 	}
 
@@ -361,12 +362,12 @@ func (userSitesList) handle(r *http.Request, _ *data.Site, u *data.User) *APIRes
 type RespUserSitesList []UserSitesListItem
 
 type UserSitesListItem struct {
-	ID      int64  `msgp:"id"`
-	Domain  string `msgp:"domain"`
-	Name    string `msgp:"name"`
-	Logo    string `msgp:"logo"`
-	Favicon string `msgp:"favicon"`
-	Role    string `msgp:"role"` // the user's role on this site
+	ID      int64
+	Domain  string
+	Name    string
+	Logo    string
+	Favicon string
+	Role    string
 }
 
 // userAgentToken returns the (salted) user agent token to use in a cookie.

@@ -6,78 +6,58 @@ import (
 	"strconv"
 
 	"github.com/dchenk/mazewire/pkg/data"
-	"github.com/dchenk/mazewire/pkg/util"
 )
 
-// The following are all of the possible roles a user may have for a site.
-const (
-	RoleOwner      = "owner"
-	RoleAdmin      = "admin"
-	RoleEditor     = "editor"
-	RoleAuthor     = "author"
-	RoleSubscriber = "subscriber"
-	RoleNone       = ""
-
-	// RoleSuper is special because it is not a role given to anyone for any site.
-	RoleSuper = "super"
-)
-
-// RoleAtLeast checks if the user's role (actualRole) is at least minRole. The special role "super" may also be passed in
-// as actualRole or minRole.
-func RoleAtLeast(actualRole, minRole string) bool {
+// RoleAtLeast checks if the user's role (actualRole) is at least minRole.
+func RoleAtLeast(actualRole, minRole Role) bool {
 	switch actualRole {
-	case RoleSuper:
+	case Role_SUPER:
 		return true
-	case RoleOwner:
-		return minRole == RoleOwner || minRole == RoleAdmin || minRole == RoleEditor || minRole == RoleAuthor || minRole == RoleSubscriber
-	case RoleAdmin:
-		return minRole == RoleAdmin || minRole == RoleEditor || minRole == RoleAuthor || minRole == RoleSubscriber
-	case RoleEditor:
-		return minRole == RoleEditor || minRole == RoleAuthor || minRole == RoleSubscriber
-	case RoleAuthor:
-		return minRole == RoleAuthor || minRole == RoleSubscriber
-	case RoleSubscriber:
-		return minRole == RoleSubscriber
+	case Role_OWNER:
+		return minRole == Role_OWNER || minRole == Role_ADMIN || minRole == Role_EDITOR ||
+			minRole == Role_AUTHOR || minRole == Role_SUBSCRIBER || minRole == Role_NONE
+	case Role_ADMIN:
+		return minRole == Role_ADMIN || minRole == Role_EDITOR || minRole == Role_AUTHOR ||
+			minRole == Role_SUBSCRIBER || minRole == Role_NONE
+	case Role_EDITOR:
+		return minRole == Role_EDITOR || minRole == Role_AUTHOR || minRole == Role_SUBSCRIBER ||
+			minRole == Role_NONE
+	case Role_AUTHOR:
+		return minRole == Role_AUTHOR || minRole == Role_SUBSCRIBER || minRole == Role_NONE
+	case Role_SUBSCRIBER:
+		return minRole == Role_SUBSCRIBER || minRole == Role_NONE
+	case Role_NONE:
+		return minRole == Role_NONE
 	default:
 		return false
 	}
 }
 
 // SiteRole gives the user's role on the site with the given ID.
-// The returned role is RoleNone if the user has no role on the site or if an error occurs.
+// The returned role is NONE if the user has no role on the site or if an error occurs.
 //
-// If a user is not found, this function checks if the user is Super: if the user is super, role is RoleSuper but
-// otherwise the returned role is RoleNone and no error is returned.
-// This function never returns a sql.ErrNoRows error.
-func SiteRole(userID, siteID int64) (string, error) {
-	opt, err := data.Conn.UserMetaByIdKey(userID, SiteRoleKey(siteID))
+// If the user's role property is not found for the site, this function checks if the user is a
+// super user: if the user is super, the role is Role_SUPER but otherwise the returned role is NONE
+// and no error is returned. This function never returns a sql.ErrNoRows error.
+func SiteRole(userID, siteID int64) (Role, error) {
+	result, err := data.Conn.UserMetaByIdKey(userID, SiteRoleKey(siteID))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// The user may be a super admin.
 			if IsSuper(userID) {
-				return RoleSuper, nil
+				return Role_SUPER, nil
 			}
+
+			// The user's role was not found.
 			err = nil
 		}
-		return RoleNone, err
+		return Role_NONE, err
 	}
 
-	// The following block does two things: It ensures that the role retrieved is a defined role in the app,
-	// and it eliminates the allocation of a string to be garbage collected at the end of the request.
-	switch string(opt.V) {
-	case RoleOwner:
-		return RoleOwner, err
-	case RoleAdmin:
-		return RoleAdmin, err
-	case RoleEditor:
-		return RoleEditor, err
-	case RoleAuthor:
-		return RoleAuthor, err
-	case RoleSubscriber:
-		return RoleSubscriber, err
-	default:
-		return RoleNone, err
-	}
+	// Ensures that the role retrieved is a real role.
+	val, err := strconv.ParseInt(string(result.V), 10, 32)
+	role, _ := ValidRoleInt64(val)
+	return role, err
 }
 
 // SiteRoleKey returns the string that should be used to associate a user with a particular role
@@ -86,12 +66,15 @@ func SiteRoleKey(siteID int64) string {
 	return "role" + strconv.FormatInt(siteID, 10)
 }
 
-// SetSiteRole gives the user the newRole for the site. If the user has no role on that site, the user is given one.
-func SetSiteRole(userId int64, siteId int64, newRole string) error {
-	if !RoleIsValid(newRole) {
-		return fmt.Errorf("users: cannot set invalid role %q for user with ID %d", newRole, userId)
+// SetSiteRole gives the user the newRole for the site. If the user has no role on that site, the
+// user is given one.
+func SetSiteRole(userId int64, siteId int64, newRole int64) error {
+	if _, ok := ValidRoleInt64(newRole); !ok {
+		return fmt.Errorf("users: cannot set invalid role %q for user with ID %d",
+			newRole, userId)
 	}
-	_, err := data.Conn.UserMetaUpdate(userId, SiteRoleKey(siteId), []byte(newRole))
+	_, err := data.Conn.UserMetaUpdate(userId, SiteRoleKey(siteId),
+		[]byte(strconv.FormatInt(newRole, 10)))
 	return err
 }
 
@@ -105,12 +88,29 @@ func IsSuper(userID int64) bool {
 	return err == nil && string(role) == "y"
 }
 
-// siteRolesAllowed are the kinds of roles users can have for sites
-var siteRolesAllowed = [6]string{RoleOwner, RoleAdmin, RoleEditor, RoleAuthor, RoleSubscriber, RoleNone}
+// RoleIsValid says if the role is of a kind that a user may have.
+func ValidRoleStr(role string) (Role, bool) {
+	val, ok := Role_value[role]
+	return Role(val), ok
+}
 
-// RoleIsValid says if the role is of a kind that may be given to a user.
-//
-// There is no way to give a user the "super" role through the app.
-func RoleIsValid(role string) bool {
-	return util.SliceContainsString(siteRolesAllowed[:], role)
+func ValidRoleInt64(role int64) (Role, bool) {
+	switch role {
+	case 11:
+		return Role_SUPER, true
+	case 9:
+		return Role_OWNER, true
+	case 7:
+		return Role_ADMIN, true
+	case 5:
+		return Role_EDITOR, true
+	case 3:
+		return Role_AUTHOR, true
+	case 1:
+		return Role_SUBSCRIBER, true
+	case 0:
+		return Role_NONE, true
+	default:
+		return Role_NONE, false
+	}
 }

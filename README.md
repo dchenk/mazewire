@@ -1,8 +1,9 @@
 # Mazewire
-A modern content management system and framework for websites and app backends.
 --
 
-## Running the system and bootstrapping
+Mazewire is a modern content management system and framework for websites and app backends.
+
+## Running Mazewire and bootstrapping
 
 Use commands prepared in the Makefile (run each under the `make` command):
  * `gen`: generate Protocol Buffers code for Go.

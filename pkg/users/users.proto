@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package users;
+
+import "types/time/time.proto";
+
+option go_package = "github.com/dchenk/mazewire/pkg/users";
+
+// A Role is a role a user can have on a site.
+enum Role {
+	NONE = 0;
+
+	SUBSCRIBER = 1;
+
+	AUTHOR = 3;
+
+	EDITOR = 5;
+
+	ADMIN = 7;
+
+	OWNER = 9;
+
+	SUPER = 11;
+}

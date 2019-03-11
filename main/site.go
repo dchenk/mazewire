@@ -30,7 +30,7 @@ type SiteCreate struct {
 // on the current site. If they are logged in but don't have admin role, they should be
 // redirected to the main site to create the site there.
 func (*SiteCreate) authorized(_ *http.Request, s *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.RoleSubscriber) || s.Id == 1
+	return users.RoleAtLeast(u.Role, users.Role_SUBSCRIBER) || s.Id == 1
 }
 
 // createWebsite creates a website and sets it up with the right tables and pages/posts.
@@ -150,7 +150,7 @@ type SiteGetTheme struct {
 
 // authorized checks just if the user has at least author role on the current site.
 func (*SiteGetTheme) authorized(_ *http.Request, _ *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.RoleAuthor)
+	return users.RoleAtLeast(u.Role, users.Role_AUTHOR)
 }
 
 // handle returns the current theme for a site. This response body is a room.Tree.
@@ -163,7 +163,7 @@ func (req *SiteGetTheme) handle(r *http.Request, s *data.Site, u *data.User) *AP
 			log.Err(r, "could not get logged in site role for user", err)
 			return errProcessing()
 		}
-		if !users.RoleAtLeast(role, users.RoleAuthor) {
+		if !users.RoleAtLeast(role, users.Role_AUTHOR) {
 			return errLowPrivileges()
 		}
 	}

@@ -40,7 +40,7 @@ type ReqPageEditContent struct {
 }
 
 func (req *ReqPageEditContent) authorized(r *http.Request, s *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.RoleAuthor)
+	return users.RoleAtLeast(u.Role, users.Role_AUTHOR)
 }
 
 // Get the content associated with a particular page, including all sections, rows, and modules of the page.
@@ -56,7 +56,7 @@ func (req *ReqPageEditContent) handle(r *http.Request, s *data.Site, u *data.Use
 			log.Err(r, "could not get logged in site role for user", err)
 			return errProcessing()
 		}
-		if !users.RoleAtLeast(role, users.RoleAuthor) {
+		if !users.RoleAtLeast(role, users.Role_AUTHOR) {
 			return errLowPrivileges()
 		}
 	}
@@ -68,7 +68,7 @@ func (req *ReqPageEditContent) handle(r *http.Request, s *data.Site, u *data.Use
 	}
 
 	// If the user has just author role on the site, the user must be the author of the page.
-	if role == users.RoleAuthor && content.Author != u.Id {
+	if role == users.Role_AUTHOR && content.Author != u.Id {
 		return errLowPrivileges()
 	}
 
@@ -148,7 +148,7 @@ type ReqPageEditSave struct {
 
 // authorized checks just if the user is at least an author on the current site.
 func (req *ReqPageEditSave) authorized(r *http.Request, s *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.RoleAuthor)
+	return users.RoleAtLeast(u.Role, users.Role_AUTHOR)
 }
 
 // handle saving changes to a page.
@@ -164,7 +164,7 @@ func (req *ReqPageEditSave) handle(r *http.Request, s *data.Site, u *data.User) 
 			log.Err(r, "could not get logged in site role for user", err)
 			return errProcessing()
 		}
-		if !users.RoleAtLeast(role, users.RoleAuthor) {
+		if !users.RoleAtLeast(role, users.Role_AUTHOR) {
 			return errLowPrivileges()
 		}
 	}
@@ -176,7 +176,7 @@ func (req *ReqPageEditSave) handle(r *http.Request, s *data.Site, u *data.User) 
 	}
 
 	// If the user has just "author" role on the site, the user must be the author of the page.
-	if role == users.RoleAuthor && content.Author != u.Id {
+	if role == users.Role_AUTHOR && content.Author != u.Id {
 		return APIResponseErr("You must be the author of this page to edit it.")
 	}
 
@@ -271,7 +271,7 @@ type ReqPageEditPublish struct {
 }
 
 func (req *ReqPageEditPublish) authorized(_ *http.Request, _ *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.RoleAuthor)
+	return users.RoleAtLeast(u.Role, users.Role_AUTHOR)
 }
 
 // pageEditPublish compiles and publishes a page.
@@ -288,7 +288,7 @@ func (req *ReqPageEditPublish) handle(r *http.Request, s *data.Site, u *data.Use
 			log.Err(r, "could not get logged in site role for user", err)
 			return errProcessing()
 		}
-		if !users.RoleAtLeast(role, users.RoleAuthor) {
+		if !users.RoleAtLeast(role, users.Role_AUTHOR) {
 			return errLowPrivileges()
 		}
 	}
@@ -300,7 +300,7 @@ func (req *ReqPageEditPublish) handle(r *http.Request, s *data.Site, u *data.Use
 	}
 
 	// if the user has just "author" role on the site, the user must be the author of the page being published
-	if role == users.RoleAuthor && content.Author != u.Id {
+	if role == users.Role_AUTHOR && content.Author != u.Id {
 		return APIResponseErr("You must be the author of this page to publish it.")
 	}
 
