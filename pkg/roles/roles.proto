@@ -1,10 +1,8 @@
 syntax = "proto3";
 
-package users;
+package roles;
 
-import "types/time/time.proto";
-
-option go_package = "github.com/dchenk/mazewire/pkg/users";
+option go_package = "github.com/dchenk/mazewire/pkg/roles";
 
 // A Role is a role a user can have on a site.
 enum Role {

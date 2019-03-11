@@ -4,16 +4,14 @@ Package `env` helps determine the environment variables with which the applicati
 
 There are two ways to configure the environment:
 
-2. Define variables as normal environment variables for a process. To use this method, start the
-main program without an `env` argument.
+2. Define variables as normal environment variables for a process. To use this method, start
+Mazewire without a `-env-file` flag.
 
-1. Define variables in a file with key=value pairs, one per line. To use this method, start the
-program with the argument `-env` to have the configuration read in from the file named "env.txt" in
-the main program's working directory, or give the `-env` flag and the name of the file with
-configuration with the `-env-file` argument (for example, `-env-file=~/mazewire-env.txt`). In such a
-file, each variable's name ends when the first '=' character is reached, and everything between the
-equals character and the newline character is taken as the variable's value. Empty lines are
-skipped, and empty values are permitted. Lines that begin with the '#' character are skipped.
+1. Define variables in a file of key=value pairs, one per line. To use this method, start Mazewire
+with the file name given as an argument of the `-env-file` flag, such as `-env-file=~/mazewire.env`.
+In such a file, each variable's name ends when the first '=' character is reached, and everything
+between the equals character and the newline character is taken as the variable's value. Empty lines
+are skipped, and empty values are permitted. Lines that begin with the '#' character are skipped.
 
 
 The following environment variables must be defined for each server instance to be started:

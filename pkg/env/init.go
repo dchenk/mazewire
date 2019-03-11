@@ -9,20 +9,23 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 )
 
+// init parses the environment variables and verifies that all the required variables are set.
+// If there is an error, a message is printed and the program exits with status 2.
 func init() {
 	flag.Parse()
+
+	*flagEnvFile = strings.TrimSpace(*flagEnvFile)
+
 	var err error
-	switch *flagEnv {
-	case envConfigFile:
-		vars, err = parseFile(*flagPath)
-	case envConfigVars:
+	if *flagEnvFile == "" {
 		vars, err = parseVars()
-	default:
-		fmt.Printf("The \"env\" argument must be either %q or %q; got unexpected value %q\n", envConfigFile, envConfigVars, *flagEnv)
-		os.Exit(2)
+	} else {
+		vars, err = parseFile(*flagEnvFile)
 	}
+
 	if err != nil {
 		fmt.Printf("An error occurred determining the environment variables; %v\n", err)
 		os.Exit(2)

@@ -13,10 +13,6 @@ import (
 )
 
 const (
-	envConfigFile   = "file"
-	envConfigVars   = "vars"
-	fileDefaultPath = "env.txt"
-
 	// Required variables.
 	VarDbConnection = "DB_CONNECTION"
 	VarDbName       = "DB_NAME"
@@ -27,7 +23,7 @@ const (
 	VarChangeTokenKey = "CHANGE_TOKEN_KEY"
 	VarGcpProject     = "GCP_PROJECT"
 
-	// Variables used for initializing the cluster.
+	// Variables used to initialize the cluster.
 	VarInit         = "INIT"
 	VarTokenKey     = "TOKEN_KEY"
 	VarAdminUIRoot  = "ADMIN_UI_ROOT"
@@ -48,16 +44,14 @@ var standardVars = append(requiredVars, VarDbParams, VarPluginsDir, VarChangeTok
 var initVars = []string{VarInit, VarTokenKey, VarAdminUIRoot, VarAdminSrcRoot, VarRootUser, VarRootEmail, VarRootPass}
 
 var (
-	flagEnv = flag.String("env", envConfigFile,
-		fmt.Sprintf("How the server environment is configured; either %q or %q", envConfigFile, envConfigVars))
-	flagPath = flag.String("env-file", fileDefaultPath,
+	flagEnvFile = flag.String("env-file", "",
 		"Where the environment variables are defined if using the file method")
 )
 
-// vars contains the environment variables that are set once upon program init.
+// vars contains the environment variables that are set at program init.
 var vars map[string]string
 
-// Vars returns the environment variables with which the application is running.
+// Vars returns a copy of the environment variables with which the application is running.
 func Vars() map[string]string {
 	m := make(map[string]string, len(vars))
 	for k, v := range vars {
@@ -130,7 +124,7 @@ var defaults = map[string]string{
 }
 
 // parseVars returns a map of the standard and the initialization environment variables used by the
-// system along with all of the variables that begin with the string "WW_".
+// system along with all of the variables that begin with the string "MW_".
 func parseVars() (map[string]string, error) {
 	toCheck := append(standardVars, initVars...)
 	m := make(map[string]string, len(toCheck))
@@ -138,7 +132,7 @@ func parseVars() (map[string]string, error) {
 		m[v] = os.Getenv(v)
 	}
 	for _, v := range os.Environ() {
-		if strings.HasPrefix(v, "WW_") {
+		if strings.HasPrefix(v, "MW_") {
 			split := strings.Split(v, "=")
 			m[split[0]] = split[1]
 		}

@@ -7,13 +7,13 @@ import (
 	"github.com/dchenk/mazewire/pkg/env"
 )
 
-// Conn is a (virtual) connection to a database.
+// Conn represents the connection to the main database.
 //
 // This variable is initialized when the Init function in this package is called, and its Close
 // method is called before the program exits.
 var Conn DB
 
-// Init sets up the database connection to be used throughout the rest of the life of the program's running.
+// Init sets up the database connection to be used throughout the rest of the program's lifetime.
 // The function must be called only once.
 func Init() error {
 	err := Conn.Init(env.Vars())
