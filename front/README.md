@@ -1,6 +1,4 @@
-# mazewire-admin
-
-The Mazewire Admin Dashboard
+# The Mazewire Admin Interface
 
 ## Build Setup
 
