@@ -13,16 +13,16 @@ import (
 	"github.com/dchenk/mazewire/pkg/util"
 )
 
-//var siteApiActions = map[string]func(*http.Request, *data.Site, *data.User, *APIResponse){
-//	"create":             siteCreate,
-//	"change_home":        siteChangeHome,
-//	"set-author-display": siteAuthorDisplay,
-//	"logout-redir":       siteLogoutRedir,
-//}
+// var siteApiActions = map[string]func(*http.Request, *data.Site, *data.User, *APIResponse){
+// 	"create":             siteCreate,
+// 	"change_home":        siteChangeHome,
+// 	"set-author-display": siteAuthorDisplay,
+// 	"logout-redir":       siteLogoutRedir,
+// }
 
 type SiteCreate struct {
-	Domain string `msgp:"domain"`
-	Name   string `msgp:"name"` // title of website
+	Domain string
+	Name   string
 }
 
 // authorized says if the current user is authorized to create a website.

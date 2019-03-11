@@ -24,8 +24,14 @@ message Site {
 	// The URL of the favicon file.
 	string favicon = 5;
 
+	// The primary language.
+	string language = 6;
+
 	// The status of the TLS on the domain: 0 = none, 1 = configuring, 2 = good
-	uint32 tls = 6;
+	uint32 tls = 7;
+
+	// Time of the last update.
+	time.Time updated = 8;
 }
 
 // A Blob is a general-use container for binary data.

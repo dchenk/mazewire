@@ -28,8 +28,9 @@ The sequence that sets the primary key of rows in the `sites` table.
 | name       | STRING     |                     |
 | logo       | STRING     | (empty string)      |
 | favicon    | STRING     | (empty string)      |
+| language   | STRING     | en-us               |
 | tls        | INT        | 0                   |
-| created    | TIMESTAMP  | now()               |
+| updated    | TIMESTAMP  | now()               |
 
 ### Indexes for sites
 

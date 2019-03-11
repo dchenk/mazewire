@@ -1,0 +1,46 @@
+@startuml
+
+hide circle
+hide empty members
+
+
+' A Plugin is a plugin that responds to hooks that it has registered to handle.
+interface Plugin {
+	' Identity returns the plugin's basic identifying metadata.
+	' This function is called before the main plugin connection is established.
+	Identity() (name string, id string, ver version.Version)
+'
+	' Specs returns the specifications within which the plugin works.
+	'
+	' For example, the plugin may indicate that it should be called asynchronously, or that it needs
+	' certain database access capabilities, or that it depends on a particular version of the core
+	' or other plugins.
+	Specs() []specs.Spec
+'
+	' Hooks specifies all of the hooks which the plugin wants to handle with its hook handlers.
+	Hooks() map[hooks.Hook]hooks.Handler
+'
+	' Filters specifies all of the filters which the plugins wants to handle with its filter
+	' handlers.
+	Filters() map[filters.Filter]filters.Handler
+'
+	' CustomHooks returns the list of all of the custom hooks the plugin is registering.
+	'
+	' One plugin's custom hooks are not the same as another plugin's custom hooks with the same name
+	' because the name of each of a plugin's custom hooks is prefixed with the plugin ID. So for one
+	' plugin to hook into another plugin's registered custom hooks, the first plugin must list the
+	' other plugin's hook name with the other plugin's ID followed by a dot followed by the hook
+	' name.
+	'
+	' So, for example, suppose a plugin with ID "alice" registers a custom hook named "jump" and
+	' another plugin with ID "bob" wants to hook into that event. The "bob" plugin needs to include
+	' its Handler with the hooks map it returns in the Hooks function, the key of this custom hook
+	' being "alice.jump".
+	CustomHooks() []hooks.Hook
+'
+	' CustomFilters returns the list of all of the custom filters the plugin is registering.
+	' Namespacing across plugins works just as it does for hooks.
+	CustomFilters() []filters.Filter
+}
+
+@enduml

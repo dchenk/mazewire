@@ -13,12 +13,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dchenk/msgp/msgp"
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/dchenk/mazewire/pkg/data"
 	"github.com/dchenk/mazewire/pkg/log"
 	"github.com/dchenk/mazewire/pkg/users"
 	"github.com/dchenk/mazewire/pkg/util"
-	"github.com/dchenk/msgp/msgp"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // getCurrentUser sends a non-nil *data.User to chan c. If a real logged in user is behind the request, then the User struct
@@ -110,16 +111,27 @@ func userCookieErr(cookieVal string) string {
 // ReqUserCreate: POST user
 // Users can only create other users on a website if they're currently on that website.
 type ReqUserCreate struct {
-	Uname string `msgp:"uname" json:"uname"` // Username.
-	Email string `msgp:"email" json:"email"` // Email address.
-	Fname string `msgp:"fname" json:"fname"` // First name.
-	Lname string `msgp:"lname" json:"lname"` // Last name.
-	Role  string `msgp:"role" json:"role"`   // the Role set is the user is going to have on the current host
-	Pass  string `msgp:"pass" json:"pass"`
+	// Username.
+	Uname string
+
+	// Email address.
+	Email string
+
+	// The user's password in plain text.
+	Pass string
+
+	// First name.
+	Fname string
+
+	// Last name.
+	Lname string
+
+	// The role the user is going to have on the site.
+	Role string
 }
 
-// handle creates a user on the site s. This API endpoint accepts the MessagePack, JSON, and x-www-form-urlencoded
-// content types.
+// handle creates a user on the site s. This API endpoint accepts the Protocol Buffers, JSON, and
+// x-www-form-urlencoded content types.
 // TODO: If a user exists, assign to site.
 func (req *ReqUserCreate) handle(r *http.Request, s *data.Site, u *data.User) *APIResponse {
 	// All values must be provided.
@@ -202,26 +214,26 @@ func (req *ReqUserCreate) handle(r *http.Request, s *data.Site, u *data.User) *A
 	}
 
 	// add the user to the site they registered under --- TODO: do this all in a transaction
-	//if err := newUser.SetSiteRole(s.Id, reqData.Role); err != nil {
-	//	log.Err(r, "error setting new user site role", err)
-	//	rt := setNewUserSiteRoleRetrier{
-	//		SiteID: s.Id,
-	//		UserID: newID,
-	//		Role:   reqData.Role,
-	//	}
-	//	// Retry the request right away, and if that fails save it for later.
-	//	if err := rt.Retry(); err != nil {
-	//		//if err := saveRetry(r, rt); err != nil {
-	//		//	log.Err(r, "could not save retry", err)
-	//		//	resp.warn("Part of the process to create your website failed. Please contact support for assistance.")
-	//		//} else {
-	//		//	resp.warn("Part of the process to create your website failed. Please try again.")
-	//		//}
-	//		// Save a message (as an option) saying that the blobs table did not get created.
-	//		go saveUserMessage(r, newID, rt.Key(), "Part of the process to create your account did not complete.")
-	//	}
-	//	return nil // TODO -----
-	//}
+	// if err := newUser.SetSiteRole(s.Id, reqData.Role); err != nil {
+	// 	log.Err(r, "error setting new user site role", err)
+	// 	rt := setNewUserSiteRoleRetrier{
+	// 		SiteID: s.Id,
+	// 		UserID: newID,
+	// 		Role:   reqData.Role,
+	// 	}
+	// 	// Retry the request right away, and if that fails save it for later.
+	// 	if err := rt.Retry(); err != nil {
+	// 		//if err := saveRetry(r, rt); err != nil {
+	// 		//	log.Err(r, "could not save retry", err)
+	// 		//	resp.warn("Part of the process to create your website failed. Please contact support for assistance.")
+	// 		//} else {
+	// 		//	resp.warn("Part of the process to create your website failed. Please try again.")
+	// 		//}
+	// 		// Save a message (as an option) saying that the blobs table did not get created.
+	// 		go saveUserMessage(r, newID, rt.Key(), "Part of the process to create your account did not complete.")
+	// 	}
+	// 	return nil // TODO -----
+	// }
 
 	// TODO: on client side, after receiving OK response, log the user in immediately and redirect to account page only if no user is currently logged in
 	return &resp
@@ -267,7 +279,8 @@ func (reqUserCheckCurrent) handle(_ *http.Request, _ *data.Site, u *data.User) *
 }
 
 // ReqUserEdit: PATCH user
-type ReqUserEdit struct { // TODO
+type ReqUserEdit struct {
+	// TODO
 	UserID int64 `msgp:"user_id"` // the user to edit
 }
 

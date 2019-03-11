@@ -13,17 +13,18 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/go-plugin"
+	"golang.org/x/oauth2/google"
+
 	"github.com/dchenk/mazewire/pkg/data"
 	"github.com/dchenk/mazewire/pkg/default_cert"
 	"github.com/dchenk/mazewire/pkg/env"
 	"github.com/dchenk/mazewire/pkg/log"
 	"github.com/dchenk/mazewire/pkg/util"
-	"github.com/hashicorp/go-plugin"
-	"golang.org/x/oauth2/google"
 )
 
 var (
-	userContentSrc  = "https://storage.googleapis.com/" + USER_CONTENT_BUCKET + "/"
+	// userContentSrc  = "https://storage.googleapis.com/" + env.ContentBucket + "/"
 	gcpDefaultCreds *google.Credentials
 )
 
@@ -31,7 +32,8 @@ func main() {
 	log.Info(nil, "=== STARTED SERVER ===")
 
 	var err error
-	gcpDefaultCreds, err = google.FindDefaultCredentials(context.Background(), "https://www.googleapis.com/auth/cloud-platform")
+	gcpDefaultCreds, err = google.FindDefaultCredentials(
+		context.Background(), "https://www.googleapis.com/auth/cloud-platform")
 	if err != nil {
 		log.Critical(nil, "could not get GCP credentials", err)
 		return
@@ -77,7 +79,6 @@ func main() {
 				// TODO: return a certificate based on the ServerName
 				return cert.DefaultCert()
 			},
-			CipherSuites: cipherSuites,
 		},
 		ReadTimeout:  time.Second * 12,
 		WriteTimeout: time.Second * 12,
@@ -176,14 +177,39 @@ func writeBadAPIReq(w http.ResponseWriter) {
 
 // writeDocHTML writes a response to an HTTP request given the HTML head and body buffers.
 // The lang argument specifies the "lang" attribute set on the opening <html> tag.
-func writeDocHTML(w http.ResponseWriter, content *contentBuffers, lang string) {
-	w.Write(htmlOpen1)
-	w.Write([]byte(lang))
-	w.Write(htmlOpen2)
-	w.Write(content.head.Bytes())
-	w.Write(htmlHeadBody)
-	w.Write(content.body.Bytes())
-	w.Write(htmlClose)
+func writeDocHTML(w http.ResponseWriter, content *contentBuffers, lang string) error {
+	_, err := w.Write(htmlOpen1)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write([]byte(lang))
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(htmlOpen2)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(content.head.Bytes())
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(htmlHeadBody)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(content.body.Bytes())
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(htmlClose)
+	return err
 }
 
 var (
@@ -223,12 +249,4 @@ func serveHealthCheck() {
 		}
 		conn.Close()
 	}
-}
-
-// The cipherSuites list is intended to be used either with modern browsers or the Google Cloud load balancer.
-var cipherSuites = []uint16{
-	tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
-	tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-	tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-	tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
 }

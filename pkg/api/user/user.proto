@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package user;
+
+import "types/time/time.proto";
+
+option go_package = "github.com/dchenk/mazewire/pkg/api/user";
+
+// A NewUser contains the information needed to create a new user.
+message NewUser {
+	// Username.
+	string uname = 2;
+
+	// Email address.
+	string email = 3;
+
+	// The user's chosen password in plain text.
+	string pass = 4;
+
+	// First name.
+	string fname = 5;
+
+	// Last name.
+	string lname = 6;
+
+	// The user's role in the site being accessed in the current request.
+	string role = 7;
+}
