@@ -95,7 +95,7 @@ message Content {
 // A User contains all the basic info of registered a user.
 message User {
 	// Row ID in the table.
-	int64 id = 1;
+	string id = 1;
 
 	// Username.
 	string uname = 2;
@@ -123,7 +123,7 @@ message User {
 // last update of the row). The rows in the database table are primary-keyed by both the user ID and the K.
 message UserMeta {
 	// UserId is a foreign key to a User ID.
-	int64 user_id = 1;
+	string user_id = 1;
 	string k = 2;
 	bytes v = 3;
 

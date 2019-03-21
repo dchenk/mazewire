@@ -104,7 +104,9 @@ func testParseFileTemp(data string, vars map[string]string) error {
 	name := temp.Name()
 	defer os.Remove(name)
 	if _, err := temp.WriteString(data); err != nil {
-		temp.Close()
+		if errClose := temp.Close(); errClose != nil {
+			err = fmt.Errorf("could not close newly written file; %v", errClose)
+		}
 		return fmt.Errorf("could not write vars data to temp file; %v", err)
 	}
 	if err = temp.Close(); err != nil {
