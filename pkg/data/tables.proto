@@ -95,6 +95,8 @@ message Content {
 // A User contains all the basic info of registered a user.
 message User {
 	// Row ID in the table.
+	// This is a 40-bit unsigned integer encoded in base58 using the format defined in pkg/base58
+	// in this repository.
 	string id = 1;
 
 	// Username.
