@@ -13,14 +13,13 @@ import (
 var (
 	regEmail     = regexp.MustCompile(`\A[\w]+[\w+.!#$%'&{}|~-]+@[\w]+[\w+.-]+\.[a-zA-Z]{2,}\z`)
 	regPathSlug  = regexp.MustCompile(`\A\w[\w+.$~*-]{0,78}\w\z`)
-	regUsername  = regexp.MustCompile(`\A[a-z][a-z0-9$_]{2,48}\z`)
+	regUsername  = regexp.MustCompile(`\A[a-z0-9][a-z0-9_]{2,48}\z`)
 	regDomain    = regexp.MustCompile(`\A[a-z0-9][-a-z0-9.]{1,61}[a-z]\z`)
 	regTimestamp = regexp.MustCompile(`\A[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\z`)
 )
 
 const (
 	ContentTypeJSON          = "application/json"
-	ContentTypeMessagePack   = "application/x-msgpack"
 	ContentTypeHTML          = "text/html; charset=UTF-8"
 	ContentTypeTextPlain     = "text/plain"
 	ContentTypeTextPlainUTF8 = "text/plain; charset=UTF-8"

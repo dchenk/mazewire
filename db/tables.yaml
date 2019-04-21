@@ -1,0 +1,54 @@
+Site:
+  type: object
+  description: >
+    A Site is the basic settings of a site, except for the time when the site was created.
+    Everything else that shapes a site is in either an Option or a Blob.
+  properties:
+    id:
+      type: int64
+      description: Row ID in the table.
+      # Proto: 1
+    domain:
+      type: string
+      description: The domain name, without any slashes; may include a sub-domain.
+      # Proto: 2
+    name:
+      type: string
+      description: The name of the website.
+      # Proto: 3
+    logo:
+      type: string
+      description: The URL of the main logo file.
+      # Proto: 4
+    favicon:
+      type: string
+      description: The URL of the favicon file.
+      # Proto: 5
+    language:
+      type: string
+      description: The primary language.
+      # Proto: 6
+    tls:
+      $ref: "#/TlsStatus"
+      # Proto: 7
+    updated:
+      type: time.Time
+      description: Time of the last update.
+      # Proto: 8
+    created:
+      type: time.Time
+      description: Time when the site was created.
+      # Proto: 9
+
+TlsStatus:
+  type: integer
+  format: uint32
+  description: The status of TLS on the domain.
+  enum:
+    - 0
+      # Name: None
+    - 1
+      # Name: Configuring
+    - 2
+      # Name: Good
+

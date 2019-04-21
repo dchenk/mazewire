@@ -1,0 +1,144 @@
+openapi: 3.0.2
+info:
+  title: Mazewire External API
+  version: 0.1.0
+components:
+  parameters:
+    stringIdParam:
+      name: id
+      in: path
+      description: The ID of the record
+      required: true
+      schema:
+        type: string
+    metadataFlagParam:
+      name: meta
+      in: query
+      description: Flag whether to also retrieve the object's associated metadata
+      schema:
+        type: boolean
+  responses:
+    invalidRequestResponse:
+      description: The request could not be accepted with the data given
+paths:
+  /:
+    get:
+      summary: List API versions
+      operationId: GetApiVersions
+      responses:
+        "200":
+          description: Returns a list of the versions of the API available
+  /sites:
+    get:
+      summary: List sites under the current site
+      operationId: GetSites
+      responses:
+        "200":
+          description: Returns a list of the sites that are organized under the site of the request
+          content:
+            "*/*":
+              schema:
+                $ref: "../db/tables.yaml#/Site"
+  /sites/{id}:
+    get:
+      summary: Get a site by ID
+      operationId: GetSiteById
+      responses:
+        "200":
+          description: Returns a list of the sites that are organized under the site of the request
+  /content:
+    get:
+      summary: List content
+      operationId: GetContent
+      parameters:
+        - $ref: "#/components/parameters/metadataFlagParam"
+      responses:
+        "200":
+          description: Returns a list of the content objects selected
+  /content/{id}:
+    get:
+      summary: Get a content object by ID
+      operationId: GetContentById
+      responses:
+        "200":
+          description: Returns the data for the object
+  /users:
+    get:
+      summary: List users
+      operationId: GetUsers
+      responses:
+        "200":
+          description: Returns a list of the users selected
+    post:
+      summary: Create a user
+      operationId: CreateUser
+      responses:
+        "200":
+          description: Created a user with the basic details given
+        "400":
+          $ref: "#/components/responses/invalidRequestResponse"
+  /users/self:
+    get:
+      summary: Get current user
+      operationId: GetUsersSelf
+      responses:
+        "200":
+          description: Returns details of the user identified from the authentication token
+  /users/{id}:
+    parameters:
+      - $ref: "#/components/parameters/stringIdParam"
+    get:
+      summary: Get a user by ID
+      operationId: GetUserById
+      parameters:
+        - $ref: "#/components/parameters/metadataFlagParam"
+      responses:
+        "200":
+          description: Returns details of the user with the ID specified
+    delete:
+      summary: Delete a user and everything owned by the user
+      responses:
+        "200":
+          description: Deleted successfully
+  /media:
+    get:
+      summary: List media metadata
+      operationId: GetMedia
+      responses:
+        "200":
+          description: Returns a list of the media metadata objects selected
+  /media/{id}:
+    parameters:
+      - $ref: "#/components/parameters/stringIdParam"
+    get:
+      summary: Get a media object metadata record by ID
+      operationId: GetUserById
+      parameters:
+        - $ref: "#/components/parameters/metadataFlagParam"
+      responses:
+        "200":
+          description: Returns details of the user with the ID specified
+    delete:
+      summary: Schedules deletion of the identified media object and its child objects
+      operationId: DeleteMediaById
+      responses:
+        "202":
+          description: Accepted deletion request
+  /plugins:
+    get:
+      summary: List plugins
+      parameters:
+        - name: siteId
+          in: query
+          description: The site
+          schema:
+            type: integer
+            format: int64
+        - name: active
+          in: query
+          description: Flag whether to retrieve only active plugins
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Returns a list of the selected plugins on the site

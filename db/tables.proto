@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package data;
 
-import "types/time/time.proto";
+import "../pkg/types/time/time.proto";
 
 option go_package = "github.com/dchenk/mazewire/pkg/data";
 
@@ -12,7 +12,7 @@ message Site {
 	// Row ID in the table.
 	int64 id = 1;
 
-	// The domain (no slashes; possibly includes sub-domain).
+	// The domain name, without any slashes; may include a sub-domain.
 	string domain = 2;
 
 	// The name of the website.
@@ -32,9 +32,12 @@ message Site {
 
 	// Time of the last update.
 	time.Time updated = 8;
+
+	// Time when the site was created.
+	time.Time created = 9;
 }
 
-// A Blob is a general-use container for binary data.
+// A Blob is a general-purpose container for binary data.
 message Blob {
 	// Row ID in the table.
 	int64 id = 1;
@@ -121,11 +124,13 @@ message User {
 	time.Time updated = 8;
 }
 
-// A UserMeta struct contains the key and value of a meta datum for a user (along with the timestamp of the
-// last update of the row). The rows in the database table are primary-keyed by both the user ID and the K.
+// A UserMeta record contains the key and value of a meta datum for a user (along with the timestamp
+// of the last update of the row). The rows in the database table are primary-keyed by both the user
+// ID and the K.
 message UserMeta {
 	// UserId is a foreign key to a User ID.
 	string user_id = 1;
+
 	string k = 2;
 	bytes v = 3;
 
@@ -133,19 +138,23 @@ message UserMeta {
 	time.Time updated = 4;
 }
 
-// An Option is a key => value pair holding a small amount of data for a site, the primary key being the
-// composite of the site ID and the value of K.
+// An Option is a key => value pair holding a small amount of data for a site, the primary key being
+// the composite of the site ID and the value of K.
 message Option {
 	// Site is a foreign key to a Site ID.
 	int64 site = 1;
+
 	string k = 2;
 	bytes v = 3;
+
+	// Time of the last update.
+	time.Time updated = 4;
 }
 
 // A Media represents a static media item belonging to a website.
 //
-// The fields Id, Ext, Site, and Name are required; the other strings default to empty strings and must not
-// be null; the Uploaded time defaults to the current time in the database.
+// The fields Id, Ext, Site, and Name are required; the other strings default to empty strings and
+// must not be null; the Uploaded time defaults to the current time in the database.
 message Media {
 	// A UUID encoded in base32 without padding.
 	string id = 1;
@@ -167,6 +176,9 @@ message Media {
 
 	// Time when the object was uploaded.
 	time.Time uploaded = 7;
+
+	// Time of the last update of the metadata.
+	time.Time updated = 8;
 }
 
 // A SiteMessage is a notification message for a site, to be shown to all users whose role on the
@@ -183,6 +195,7 @@ message SiteMessage {
 
 	// K is a key to identify the message.
 	string k = 4;
+
 	string message = 5;
 
 	// Time when the message was created.
@@ -199,6 +212,7 @@ message UserMessage {
 
 	// K is a key to identify the message.
 	string k = 3;
+
 	string message = 4;
 
 	// Time when the message was created.

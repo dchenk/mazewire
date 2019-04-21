@@ -3,17 +3,15 @@
 This file describes the database schema used.
 
 Some data types, such as `BYTES`, are named differently in different DBMSs. The types and functions
-used here use the CockroachDB syntax.
+used here use the CockroachDB names and syntax.
 
-The `SEQUENCE` schemas are necessary only for database systems that require such a counter outside
-of the definition of a table; other systems, such as MySQL, have increment features built into the
-tables.
+The `SEQUENCE` generators are necessary only for database systems that explicitly require such a
+counter because they do not have the equivalent of an "auto increment" column attribute as in MySQL.
 
-None of the columns in any of the tables can have a `NULL` value. Columns that don't have a default
-value defined require a value upon insertion of a row.
+None of the columns in any of the tables can have a `NULL` value.
 
-All foreign key references use the `ON DELETE CASCADE` feature so that there are never child records
-remaining after a parent record is deleted.
+All foreign key references use the `ON DELETE CASCADE` feature so that there are never orphaned
+child records remaining after a parent record is deleted.
 
 ## Sequence sites_id
 
@@ -28,9 +26,10 @@ The sequence that sets the primary key of rows in the `sites` table.
 | name       | STRING     |                     |
 | logo       | STRING     | (empty string)      |
 | favicon    | STRING     | (empty string)      |
-| language   | STRING     | en-us               |
+| language   | STRING     | 'en-us'             |
 | tls        | INT        | 0                   |
 | updated    | TIMESTAMP  | now()               |
+| created    | TIMESTAMP  | now()               |
 
 ### Indexes for sites
 
