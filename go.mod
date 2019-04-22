@@ -3,8 +3,8 @@ module github.com/dchenk/mazewire
 require (
 	cloud.google.com/go v0.36.0
 	github.com/dchenk/go-render-quill v0.0.0-20190103002240-ec868ac0fe4a
-	github.com/dchenk/msgp/msgp v0.0.0-20180815194337-5c34657c2259
 	github.com/fatih/color v1.7.0
+	github.com/getkin/kin-openapi v0.1.1-0.20190418174838-7eaf71972b66 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/golang/protobuf v1.3.0
 	github.com/hashicorp/go-hclog v0.8.0 // indirect
@@ -22,7 +22,7 @@ require (
 	github.com/xenolf/lego v2.2.0+incompatible
 	go.opencensus.io v0.19.1 // indirect
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
-	golang.org/x/net v0.0.0-20190310074541-c10a0554eabf
+	golang.org/x/net v0.0.0-20190310074541-c10a0554eabf // indirect
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
 	golang.org/x/sys v0.0.0-20190310054646-10058d7d4faa // indirect
 	google.golang.org/api v0.1.0

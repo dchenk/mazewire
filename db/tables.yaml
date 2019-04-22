@@ -7,48 +7,48 @@ Site:
     id:
       type: int64
       description: Row ID in the table.
-      # Proto: 1
+      x-proto-field: 1
     domain:
       type: string
       description: The domain name, without any slashes; may include a sub-domain.
-      # Proto: 2
+      x-proto-field: 2
     name:
       type: string
       description: The name of the website.
-      # Proto: 3
+      x-proto-field: 3
     logo:
       type: string
       description: The URL of the main logo file.
-      # Proto: 4
+      x-proto-field: 4
     favicon:
       type: string
       description: The URL of the favicon file.
-      # Proto: 5
+      x-proto-field: 5
     language:
       type: string
       description: The primary language.
-      # Proto: 6
+      x-proto-field: 6
     tls:
       $ref: "#/TlsStatus"
-      # Proto: 7
+      x-proto-field: 7
     updated:
       type: time.Time
       description: Time of the last update.
-      # Proto: 8
+      x-proto-field: 8
     created:
       type: time.Time
       description: Time when the site was created.
-      # Proto: 9
+      x-proto-field: 9
 
 TlsStatus:
   type: integer
   format: uint32
   description: The status of TLS on the domain.
   enum:
-    - 0
-      # Name: None
-    - 1
-      # Name: Configuring
-    - 2
-      # Name: Good
+    - value: 0
+      x-proto-name: None
+    - value: 1
+      x-proto-name: Configuring
+    - value: 2
+      x-proto-name: Good
 

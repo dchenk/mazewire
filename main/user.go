@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dchenk/msgp/msgp"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/dchenk/mazewire/pkg/data"

@@ -23,7 +23,6 @@ import "codemirror/mode/htmlmixed/htmlmixed.js"
 
 import "./editor-theme.css"
 
-import {dateExtPrefix, msgpPackDate, msgpUnpackDate} from "./msgp-date.js"
 // Files with the ".rawcss" extension may belong either just to the page editing iframe component or also
 // also in the main app. The following mainAndIframeCSS array lists the CSS files that should be used in
 // the main app. These files are not pre-processed by an CSS tool (TODO: should they be?).
@@ -32,10 +31,6 @@ import layoutsCSS from "./layouts.rawcss"
 const MessagePackCodec = msgpack.createCodec({
 	uint8array: true
 })
-
-// Add the time.Time encoding used in github.com/dchenk/msgp.
-MessagePackCodec.addExtUnpacker(dateExtPrefix, msgpUnpackDate)
-MessagePackCodec.addExtPacker(dateExtPrefix, Date, msgpPackDate)
 
 
 const mainAndIframeCSS = [layoutsCSS]

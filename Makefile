@@ -1,15 +1,18 @@
 SHELL := /bin/bash
 
-.PHONY: fmt gen gen_env crdb_setup crdb crdb_sql srcs start clean test deploy
+.PHONY: fmt gen_proto gen_api gen_env crdb_setup crdb crdb_sql srcs start clean test deploy
 
 fmt:
 	gofmt -s -w -e ./
 	find . -type f -name "*.proto" | xargs clang-format -verbose -style file -i
 
 # Generate code for Protocol Buffers encoding.
-gen:
+gen_proto:
 	for i in `find . -type f -name "*.proto"`; do \
 		protoc --proto_path=pkg --go_out=plugins=grpc,paths=source_relative:pkg "$$i"; done
+
+gen_api:
+	go run run/*.go gen-openapi
 
 # Create the env_dev.go or env.go file with the environment variables.
 # The "env" variable must be specified as either "dev" or "prod".
@@ -39,7 +42,7 @@ start:
 clean:
 	rm ./main/cert_prod.go
 
-test: ./main/env-sample.txt
+test: ./.sample.env
 	go test ./...
 
 deploy:

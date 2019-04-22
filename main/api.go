@@ -13,7 +13,6 @@ import (
 	"github.com/dchenk/mazewire/pkg/env"
 	"github.com/dchenk/mazewire/pkg/log"
 	"github.com/dchenk/mazewire/pkg/util"
-	"github.com/dchenk/msgp/msgp"
 )
 
 const (

@@ -17,7 +17,6 @@ import (
 	"github.com/dchenk/mazewire/pkg/plugins"
 	"github.com/dchenk/mazewire/pkg/room"
 	"github.com/dchenk/mazewire/pkg/users"
-	"github.com/dchenk/msgp/msgp"
 	"github.com/golang/protobuf/proto"
 )
 

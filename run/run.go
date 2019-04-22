@@ -36,6 +36,7 @@ var args = map[string]func(args []string) error{
 	"srcs":           ShowAdminSources,
 	"deploy":         Deploy,
 	"gen-env":        GenerateEnvFiles,
+	"gen-openapi":    GenerateOpenAPI,
 	"gen-admin-vers": GenAdminVersions,
 }
 

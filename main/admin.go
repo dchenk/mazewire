@@ -6,7 +6,6 @@ import (
 	"github.com/dchenk/mazewire/pkg/data"
 	"github.com/dchenk/mazewire/pkg/log"
 	"github.com/dchenk/mazewire/pkg/users"
-	"github.com/dchenk/msgp/msgp"
 )
 
 // adminSrcNames lists the short name (used in the URL) of each of the admin dashboard static source files,

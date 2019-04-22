@@ -20,6 +20,8 @@ components:
   responses:
     invalidRequestResponse:
       description: The request could not be accepted with the data given
+  schemas:
+  # Generated schema code goes here.
 paths:
   /:
     get:
@@ -38,14 +40,22 @@ paths:
           content:
             "*/*":
               schema:
-                $ref: "../db/tables.yaml#/Site"
+                type: array
+                items:
+                  $ref: "../db/tables.yaml#/Site"
   /sites/{id}:
+    parameters:
+      - $ref: "#/components/parameters/stringIdParam"
     get:
       summary: Get a site by ID
       operationId: GetSiteById
       responses:
         "200":
           description: Returns a list of the sites that are organized under the site of the request
+          content:
+            "*/*":
+              schema:
+                $ref: "../db/tables.yaml#/Site"
   /content:
     get:
       summary: List content
@@ -56,6 +66,8 @@ paths:
         "200":
           description: Returns a list of the content objects selected
   /content/{id}:
+    parameters:
+      - $ref: "#/components/parameters/stringIdParam"
     get:
       summary: Get a content object by ID
       operationId: GetContentById
@@ -112,7 +124,7 @@ paths:
       - $ref: "#/components/parameters/stringIdParam"
     get:
       summary: Get a media object metadata record by ID
-      operationId: GetUserById
+      operationId: GetMediaById
       parameters:
         - $ref: "#/components/parameters/metadataFlagParam"
       responses:
