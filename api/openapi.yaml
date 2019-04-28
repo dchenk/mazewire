@@ -42,7 +42,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "../db/tables.yaml#/Site"
+                  $ref: "#/components/schemas/Site"
   /sites/{id}:
     parameters:
       - $ref: "#/components/parameters/stringIdParam"
@@ -55,7 +55,7 @@ paths:
           content:
             "*/*":
               schema:
-                $ref: "../db/tables.yaml#/Site"
+                $ref: "#/components/schemas/Site"
   /content:
     get:
       summary: List content

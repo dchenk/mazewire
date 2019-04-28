@@ -1,126 +1,163 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
+	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"gopkg.in/yaml.v2"
 )
 
+func prefixLines(r io.Reader, prefix string) []byte {
+	liner := bufio.NewReader(r)
+	buffer := bytes.Buffer{}
+	for {
+		line, err := liner.ReadBytes('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			panic(err)
+		}
+		buffer.WriteString(prefix)
+		buffer.Write(line)
+	}
+	return buffer.Bytes()
+}
+
+const componentsSchemas = "#/components/schemas"
+
 func GenerateOpenAPI(_ []string) error {
-	return readTables()
-	data, err := ioutil.ReadFile("openapi.yaml")
+	tables, err := readTables()
 	if err != nil {
-		return fmt.Errorf("could not read spec file; %v", err)
+		return err
 	}
 
-	loader := openapi3.SwaggerLoader{
-		IsExternalRefsAllowed: true,
-		// LoadSwaggerFromURIFunc:
-		// func(loader *openapi3.SwaggerLoader, url *url.URL) (*openapi3.Swagger, error) {
-		// 	fmt.Print(loader, url)
-		// 	return nil, nil
-		// },
+	tablesSchemas, err := yaml.Marshal(tables)
+	if err != nil {
+		return fmt.Errorf("could not marshal tables schemas; %v", err)
 	}
-	spec, err := loader.LoadSwaggerFromData(data)
+
+	const indent = "    "
+
+	file, err := os.Open("api/openapi.yaml")
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	reader := bufio.NewReader(file)
+	buffer := bytes.Buffer{}
+
+	didTables := false
+	for {
+		line, err := reader.ReadBytes('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return fmt.Errorf("could not read line in tables file; %v", err)
+		}
+		if !didTables && bytes.Contains(line, []byte("# Generated schema code")) {
+			buffer.Write(prefixLines(bytes.NewBuffer(tablesSchemas), indent))
+			didTables = true
+		} else {
+			buffer.Write(line)
+		}
+	}
+
+	loader := openapi3.SwaggerLoader{}
+
+	spec, err := loader.LoadSwaggerFromData(buffer.Bytes())
 	if err != nil {
 		return fmt.Errorf("could not load spec file; %v", err)
 	}
-	fmt.Print(spec)
+
+	if err := spec.Validate(context.Background()); err != nil {
+		return fmt.Errorf("spec is not valid: %v", err)
+	}
+
+	specJSON, err := spec.MarshalJSON()
+	if err != nil {
+		return fmt.Errorf("could not marshal JSON; %v", err)
+	}
+
+	fmt.Printf("%s\n", specJSON)
 	return nil
 }
 
-func readTables() error {
+func readTables() (TypesDoc, error) {
 	file, err := os.Open("db/tables.yaml")
 	if err != nil {
-		return fmt.Errorf("could not open tables file; %v", err)
+		return nil, fmt.Errorf("could not open tables file; %v", err)
 	}
+	defer file.Close()
 	decoder := yaml.NewDecoder(file)
 	decoder.SetStrict(true)
-	data := make(TablesDoc, 4)
-	err = decoder.Decode(&data)
-	if err != nil {
-		return fmt.Errorf("DECODING; %v", err)
-	}
-	fmt.Printf("%#v\n", data)
-	return nil
+	data := make(TypesDoc, 10)
+	return data, decoder.Decode(&data)
 }
 
-type OpenAPISpecElement interface {
-	// ToOAS returns the YAML that specifies the permissible values for the element, which is the
-	// type schema for Schemas or Properties or the literal value for EnumOptions.
-	// The indent string must be placed in front of each line.
-	ToOAS(indent string) string
-}
+// integerType matches integer type names that have an explicit size.
+var integerType = regexp.MustCompile("^int\\d+$")
 
-// The TablesDoc type is the type of the "tables.yaml" file.
-type TablesDoc map[string]Schema
-
-func (r TablesDoc) ToOAS(indent string) string {
-	builder := strings.Builder{}
-	for k, v := range r {
-		builder.WriteString(indent)
-		builder.WriteString(k)
-		builder.WriteString(": ")
-		builder.WriteString(v.ToOAS(indent))
-	}
-	return builder.String()
-}
+// The TypesDoc type is the type of the "tables.yaml" file.
+type TypesDoc map[string]Schema
 
 type Schema struct {
-	Type        string              `yaml:"type"`
-	Format      string              `yaml:"format"`
-	Description string              `yaml:"description"`
-	Properties  map[string]Property `yaml:"properties"`
-	Enum        []EnumOption        `yaml:"enum"`
+	Type           string              `yaml:"type"`
+	Format         string              `yaml:"format,omitempty"`
+	Description    string              `yaml:"description"`
+	Properties     map[string]Property `yaml:"properties,omitempty"`
+	Enum           []EnumOption        `yaml:"enum,omitempty"`
+	ProtoPackage   string              `yaml:"x-proto-package,omitempty"`
+	ProtoGoPackage string              `yaml:"x-proto-go_package,omitempty"`
 }
 
-func (s *Schema) ToOAS(indent string) string {
-	builder := strings.Builder{}
-	err := yaml.NewEncoder(&builder).Encode(s)
-	if err != nil {
-		panic(fmt.Sprintf("could not encode schema; %v", err))
+// MarshalYAML implements yaml.Marshaler to return an object that can be a valid OpenAPI schema.
+func (s Schema) MarshalYAML() (interface{}, error) {
+	if integerType.MatchString(s.Type) {
+		s.Format = s.Type
+		s.Type = "integer"
 	}
-	return builder.String()
+	s.ProtoGoPackage = ""
+	return s, nil
 }
 
+// A Property is a property of a Schema.
 type Property struct {
-	Ref         *Ref   `yaml:"$ref"`
-	Type        string `yaml:"type"`
-	Description string `yaml:"description"`
-	Enum        Enum   `yaml:"enum"`
-	ProtoField  uint32 `yaml:"x-proto-field"`
+	// Ref can point to a Schema, and if it's set then no other fields should be set.
+	Ref         *Ref         `yaml:"$ref,omitempty"`
+	Type        string       `yaml:"type,omitempty"`
+	Format      string       `yaml:"format,omitempty"`
+	Description string       `yaml:"description,omitempty"`
+	Enum        []EnumOption `yaml:"enum,omitempty"`
+	ProtoField  uint32       `yaml:"x-proto-field,omitempty"`
 }
 
-func (s *Property) ToOAS(indent string) string {
-	builder := strings.Builder{}
-	err := yaml.NewEncoder(&builder).Encode(s)
-	if err != nil {
-		panic(fmt.Sprintf("could not encode schema; %v", err))
+// MarshalYAML implements yaml.Marshaler to return an object that can be a valid OpenAPI property.
+func (p Property) MarshalYAML() (interface{}, error) {
+	if integerType.MatchString(p.Type) {
+		p.Format = p.Type
+		p.Type = "integer"
 	}
-	return builder.String()
+	p.ProtoField = 0
+	return p, nil
 }
 
 // A Ref locates another schema.
 type Ref string
 
-// ToOAS for the Ref type expects the ref string to start with "#/" and point to a schema within
-// the same file.
-func (r Ref) ToOAS(indent string) string {
-	return indent + "#/components/schemas" + strings.TrimPrefix(string(r), "#")
-}
-
-type Enum []EnumOption
-
-func (e Enum) ToOAS(indent string) string {
-	builder := strings.Builder{}
-	for _, v := range e {
-		builder.WriteString(v.ToOAS(indent))
-	}
-	return builder.String()
+// MarshalYAML for the Ref type expects the ref string to start with "#/" and point to a schema
+// at the root of a TypesDoc file.
+func (r Ref) MarshalYAML() (interface{}, error) {
+	return componentsSchemas + strings.TrimPrefix(string(r), "#"), nil
 }
 
 type EnumOption struct {
@@ -128,6 +165,6 @@ type EnumOption struct {
 	ProtoName string `yaml:"x-proto-name"`
 }
 
-func (eo *EnumOption) ToOAS(indent string) string {
-	return fmt.Sprintf("- %s%d\n%s  # Field name: %s", indent, eo.Value, indent, eo.ProtoName)
+func (eo EnumOption) MarshalYAML() (interface{}, error) {
+	return eo.Value, nil
 }

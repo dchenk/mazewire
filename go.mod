@@ -4,7 +4,7 @@ require (
 	cloud.google.com/go v0.36.0
 	github.com/dchenk/go-render-quill v0.0.0-20190103002240-ec868ac0fe4a
 	github.com/fatih/color v1.7.0
-	github.com/getkin/kin-openapi v0.1.1-0.20190418174838-7eaf71972b66 // indirect
+	github.com/getkin/kin-openapi v0.1.1-0.20190418174838-7eaf71972b66
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/golang/protobuf v1.3.0
 	github.com/hashicorp/go-hclog v0.8.0 // indirect
@@ -28,4 +28,5 @@ require (
 	google.golang.org/api v0.1.0
 	google.golang.org/genproto v0.0.0-20190307195333-5fe7a883aa19 // indirect
 	google.golang.org/grpc v1.19.0
+	gopkg.in/yaml.v2 v2.2.2
 )
