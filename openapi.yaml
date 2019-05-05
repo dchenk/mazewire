@@ -61,6 +61,9 @@ paths:
     post:
       summary: Create a site
       operationId: CreateSite
+      requestBody: 
+      parameters:
+        - $ref: "#/components/schemas/Site"
       responses:
         "200":
           description: Created a site
@@ -133,6 +136,14 @@ paths:
       responses:
         "200":
           description: Deleted successfully
+  /users/{id}/roles:
+    parameters:
+      - $ref: "#/components/parameters/stringIdParam"
+    get:
+      operationId: GetUserRoles
+      responses:
+        "200":
+          description: Returns the mapping of site IDs to roles for the user where role is not None.
   /media:
     get:
       summary: List media metadata
@@ -140,6 +151,12 @@ paths:
       responses:
         "200":
           description: Returns a list of the media metadata objects selected
+    post:
+      summary: Upload a media object
+      operationId: UploadMedia
+      responses:
+        "202":
+          description: Accepted upload request
   /media/{id}:
     parameters:
       - $ref: "#/components/parameters/stringIdParam"
@@ -151,12 +168,6 @@ paths:
       responses:
         "200":
           description: Returns details of the user with the ID specified
-    post:
-      summary: Upload a media object
-      operationId: UploadMedia
-      responses:
-        "202":
-          description: Accepted upload request
     delete:
       summary: Schedules deletion of the identified media object and its child objects
       operationId: DeleteMediaById
@@ -166,6 +177,7 @@ paths:
   /plugins:
     get:
       summary: List plugins
+      operationId: GetPlugins
       parameters:
         - name: siteId
           in: query
@@ -184,6 +196,7 @@ paths:
   /health:
     get:
       summary: Check the health of the system
+      operationId: GetHealth
       responses:
         "200":
           description: Basic checks passed

@@ -11,27 +11,26 @@ import (
 
 	"github.com/dchenk/mazewire/pkg/data"
 	"github.com/dchenk/mazewire/pkg/log"
-	"github.com/dchenk/mazewire/pkg/users"
+	"github.com/dchenk/mazewire/pkg/roles"
 	"github.com/dchenk/mazewire/pkg/util"
 )
 
 // ReqPagepostList: GET pagepost
 type ReqPagepostList struct {
-	Site    int64  `msgp:"site"`    // the site ID, defaults to current host
-	PpType  string `msgp:"pp_type"` // either "pages" or "posts", defaults to pages
-	Offset  uint64 `msgp:"offset"`  // the pagination offset; defaults to 0
-	Trashed bool   `msgp:"trashed"` // whether to get trashed items, otherwise defaults to getting "published", "draft", and "unsaved" items
+	Site    int64  `json:"site"`    // the site ID, defaults to current host
+	PpType  string `json:"pp_type"` // either "pages" or "posts", defaults to pages
+	Offset  uint64 `json:"offset"`  // the pagination offset; defaults to 0
+	Trashed bool   `json:"trashed"` // whether to get trashed items, otherwise defaults to getting "published", "draft", and "unsaved" items
 }
 
 // authorized checks just if the user is at least an author on the current site. A further check needs to ensure
 // that the user can make changes to non-current sites.
 func (*ReqPagepostList) authorized(_ *http.Request, _ *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.Role_AUTHOR)
+	return roles.RoleAtLeast(u.Role, roles.Role_AUTHOR)
 }
 
 // List either pages or posts (for the admin area), paged by 20 results.
 func (req *ReqPagepostList) handle(r *http.Request, s *data.Site, u *data.User) *APIResponse {
-
 	if req.Site == 0 {
 		req.Site = s.Id // Site defaults to the current host.
 	} else {
@@ -40,7 +39,7 @@ func (req *ReqPagepostList) handle(r *http.Request, s *data.Site, u *data.User) 
 			log.Err(r, "could not get logged in site role for user", err)
 			return errProcessing()
 		}
-		if !users.RoleAtLeast(role, users.Role_AUTHOR) {
+		if !roles.RoleAtLeast(role, roles.Role_AUTHOR) {
 			return errLowPrivileges()
 		}
 	}
@@ -59,7 +58,7 @@ func (req *ReqPagepostList) handle(r *http.Request, s *data.Site, u *data.User) 
 	// The authorCheck variable is 0 only if the user making this request has higher than author privileges,
 	// meaning that all pages/posts will be retrieved.
 	var authorCheck int64
-	if u.Role == users.Role_AUTHOR {
+	if u.Role == roles.Role_AUTHOR {
 		authorCheck = u.Id
 	}
 
@@ -138,23 +137,23 @@ func (req *ReqPagepostList) handle(r *http.Request, s *data.Site, u *data.User) 
 }
 
 type RespPagepostList struct {
-	Items  []PagepostListing `msgp:"items"`
-	Count  uint32            `msgp:"count"`
-	Offset uint64            `msgp:"offset"`
+	Items  []PagepostListing `json:"items"`
+	Count  uint32            `json:"count"`
+	Offset uint64            `json:"offset"`
 }
 
 // ReqPagepostCreate: POST pagepost
 type ReqPagepostCreate struct {
-	Site   int64  `msgp:"site"`    // the site ID; defaults to ID of current host
-	Slug   string `msgp:"slug"`    // the URL formatted slug of the page or post itself, without slashes, maximum 80 characters
-	PpType string `msgp:"pp_type"` // either "page" or "post"; defaults to "page"
-	Parent int64  `msgp:"parent"`  // optionally set this new page under a parent page; defaults to 0
-	Title  string `msgp:"title"`   // title of the page or post, maximum 255 characters
+	Site   int64  `json:"site"`    // the site ID; defaults to ID of current host
+	Slug   string `json:"slug"`    // the URL formatted slug of the page or post itself, without slashes, maximum 80 characters
+	PpType string `json:"pp_type"` // either "page" or "post"; defaults to "page"
+	Parent int64  `json:"parent"`  // optionally set this new page under a parent page; defaults to 0
+	Title  string `json:"title"`   // title of the page or post, maximum 255 characters
 }
 
 // authorized checks just if the user has at least author role on the current site.
 func (req *ReqPagepostCreate) authorized(_ *http.Request, _ *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.Role_AUTHOR)
+	return roles.RoleAtLeast(u.Role, roles.Role_AUTHOR)
 }
 
 // handle creates either a page or a post.
@@ -168,7 +167,7 @@ func (req *ReqPagepostCreate) handle(r *http.Request, s *data.Site, u *data.User
 			log.Err(r, "could not get logged in site role for user", err)
 			return errProcessing()
 		}
-		if !users.RoleAtLeast(role, users.Role_AUTHOR) {
+		if !roles.RoleAtLeast(role, roles.Role_AUTHOR) {
 			return errLowPrivileges()
 		}
 	}
@@ -219,7 +218,7 @@ func (req *ReqPagepostCreate) handle(r *http.Request, s *data.Site, u *data.User
 }
 
 type RespPagepostCreate struct {
-	NewId int64 `msgp:"new_id"`
+	NewId int64 `json:"new_id"`
 }
 
 // slugIsDisallowed says if the given slug is in the disallowed slugs list.
@@ -241,7 +240,7 @@ type ReqPagepostMakeDynElem struct {
 
 // authorized says just if the user has at least author role on the current site.
 func (req *ReqPagepostMakeDynElem) authorized(r *http.Request, s *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.Role_AUTHOR)
+	return roles.RoleAtLeast(u.Role, roles.Role_AUTHOR)
 }
 
 func (req *ReqPagepostMakeDynElem) handle(r *http.Request, s *data.Site, u *data.User) *APIResponse {
@@ -278,7 +277,7 @@ func updateContentMeta(r *http.Request, u *data.User, s *data.Site, existing *da
 				}
 			case "author":
 				uIdStr := strconv.FormatInt(u.Id, 10) // string ID of current user
-				if uIdStr == val {                    // Check if the new author is the user making the API request.
+				if uIdStr == val { // Check if the new author is the user making the API request.
 					// We already checked that the current user has at least author role on the site; just check
 					// if the current user is already the author of the page (to avoid extra work for the DB).
 					if existing.Author == u.Id {
@@ -299,7 +298,7 @@ func updateContentMeta(r *http.Request, u *data.User, s *data.Site, existing *da
 						return
 					}
 					// Check if the person who is supposed to be the new author has at least "author" role on the site.
-					if users.RoleAtLeast(newAuthor.Role, users.Role_AUTHOR) {
+					if roles.RoleAtLeast(newAuthor.Role, roles.Role_AUTHOR) {
 						includeCol = true
 					} else {
 						errs <- "The new author must have at least 'author' role on this site."
@@ -351,6 +350,6 @@ var contentRecordCols = [7]string{"author", "title", "slug", "meta_title", "meta
 
 // The PagepostListing type represents a page or post listing element that may have child pages or posts.
 type PagepostListing struct {
-	*data.Content `msgp:"content"`
-	Children      []data.Content `msgp:"children"`
+	*data.Content `json:"content"`
+	Children      []data.Content `json:"children"`
 }

@@ -21,6 +21,7 @@ var (
 const (
 	ContentTypeJSON          = "application/json"
 	ContentTypeHTML          = "text/html; charset=UTF-8"
+	ContentTypeProtobuf      = "application/protobuf"
 	ContentTypeTextPlain     = "text/plain"
 	ContentTypeTextPlainUTF8 = "text/plain; charset=UTF-8"
 	ContentTypeFormURL       = "application/x-www-form-urlencoded"
@@ -65,7 +66,6 @@ func ValidPathSlug(s string) bool {
 // SanitizePhone removes all non-digits from s to format it roughly according to the North American
 // Numbering Plan (NANP). If there is a leading 1 and more than 10 digits total, the 1 is removed.
 func SanitizePhone(s string) (string, error) {
-
 	out := make([]byte, 0, 11)
 	for i := 0; i < len(s); i++ {
 		if strings.IndexByte("0123456789", s[i]) > -1 {
@@ -85,7 +85,6 @@ func SanitizePhone(s string) (string, error) {
 	}
 
 	return outStr, nil
-
 }
 
 // SplitRequestPath splits p by "/" and returns a slice of 1<=len<=3 representing the slugs of a request path.
@@ -111,13 +110,11 @@ func SplitRequestPath(p string) []string {
 	}
 
 	if len(a) == 0 {
-		return homeSlice
+		return []string{"/"}
 	}
 
 	return a
 }
-
-var homeSlice = []string{"/"} // Allocated only once for SplitRequestPath.
 
 // TimeStampFormat is the format of a timestamp.
 const TimeStampFormat = "2006-01-02 15:04:05"

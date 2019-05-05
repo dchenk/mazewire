@@ -2,16 +2,18 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"strings"
+
+	"golang.org/x/oauth2"
+	"google.golang.org/api/dns/v1"
 
 	"github.com/dchenk/mazewire/pkg/data"
 	"github.com/dchenk/mazewire/pkg/env"
 	"github.com/dchenk/mazewire/pkg/log"
-	"github.com/dchenk/mazewire/pkg/users"
+	"github.com/dchenk/mazewire/pkg/roles"
 	"github.com/dchenk/mazewire/pkg/util"
-	"golang.org/x/oauth2"
-	"google.golang.org/api/dns/v1"
 )
 
 // list all zones for the Google project
@@ -28,7 +30,7 @@ func dnsListZones(r *http.Request, s *data.Site, u *data.User) *APIResponse {
 
 	body := make(RespDnsListZones, 0, 1)
 
-	call := service.ManagedZones.List(env.GCP_PROJECT) // returns *ManagedZonesListCall
+	call := service.ManagedZones.List(env.GCP_PROJECT)
 	if err := call.Pages(ctx, func(page *dns.ManagedZonesListResponse) error {
 		for _, zone := range page.ManagedZones {
 			body = append(body, &DnsManagedZone{
@@ -53,20 +55,20 @@ type RespDnsListZones []*DnsManagedZone
 
 // A mirror of the important fields of google.golang.org/api/dns.ManagedZone
 type DnsManagedZone struct {
-	CreationTime  string   `msgp:"created"`
-	DnsName       string   `msgp:"dns_name"`
-	Id            uint64   `msgp:"id"`
-	Name          string   `msgp:"name"`
-	NameServerSet string   `msgp:"ns_set"` // maybe this is not necessary?
-	NameServers   []string `msgp:"name_servers"`
+	CreationTime  string   `json:"created"`
+	DnsName       string   `json:"dns_name"`
+	Id            uint64   `json:"id"`
+	Name          string   `json:"name"`
+	NameServerSet string   `json:"ns_set"` // maybe this is not necessary?
+	NameServers   []string `json:"name_servers"`
 }
 
 // list all records for a zone
 func dnsListZoneRecords(r *http.Request, s *data.Site, u *data.User) *APIResponse {
 	var reqData ReqDnsListZoneRecords
-	err := msgp.Decode(r.Body, &reqData)
+	err := json.Decode(r.Body, &reqData)
 	if err != nil {
-		log.Err(r, errDecodingMsgp, err)
+		log.Err(r, errDecodingProto, err)
 		return errProcessing()
 	}
 
@@ -84,7 +86,7 @@ func dnsListZoneRecords(r *http.Request, s *data.Site, u *data.User) *APIRespons
 		}
 	}
 
-	if !users.RoleAtLeast(role, users.RoleAdmin) {
+	if !roles.RoleAtLeast(role, roles.Role_ADMIN) {
 		if u.Id == 0 {
 			return errMustLogin()
 		}
@@ -140,7 +142,7 @@ type RespDnsListZoneRecords []*DnsResourceRecordSet
 func dnsCreateZone(r *http.Request, _ *data.Site, u *data.User) *APIResponse {
 	var reqData ReqDnsCreateZone
 	if err := msgp.Decode(r.Body, &reqData); err != nil {
-		log.Err(r, errDecodingMsgp, err)
+		log.Err(r, errDecodingProto, err)
 		return errProcessing()
 	}
 
@@ -194,7 +196,8 @@ type ReqDnsCreateZone struct {
 	Domain string `json:"domain"` // the domain name for the new zone
 }
 
-type RespDnsCreateZone struct { // TODO
+type RespDnsCreateZone struct {
+	// TODO
 }
 
 // set up context and service for Google DNS API

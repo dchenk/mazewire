@@ -93,7 +93,7 @@ type SiteChangeHome struct {
 }
 
 func (req *SiteChangeHome) authorized(r *http.Request, s *data.Site, u *data.User) bool {
-	return roles.RoleAtLeast(u.Role, roles.RoleAdmin)
+	return roles.RoleAtLeast(u.Role, roles.Role_ADMIN)
 }
 
 func (req *SiteChangeHome) handle(r *http.Request, s *data.Site, u *data.User) *APIResponse {
@@ -106,7 +106,7 @@ func (req *SiteChangeHome) handle(r *http.Request, s *data.Site, u *data.User) *
 			log.Err(r, "could not get logged in site role for user", err)
 			return errProcessing()
 		}
-		if !roles.RoleAtLeast(role, roles.RoleAdmin) {
+		if !roles.RoleAtLeast(role, roles.Role_ADMIN) {
 			return errLowPrivileges()
 		}
 	}

@@ -1,13 +1,15 @@
 package main
 
 import (
-	"bytes"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+
+	"github.com/golang/protobuf/proto"
 
 	"github.com/dchenk/mazewire/pkg/data"
 	"github.com/dchenk/mazewire/pkg/env"
@@ -20,8 +22,8 @@ const (
 	errIncompleteForm = "Not all required fields are filled out. Please complete the form."
 	errNoMembership   = "You do not yet have membership on this site."
 	errInvalidLogin   = "The login details you entered are incorrect."
-	errDecodingJSON   = "error decoding JSON req"
-	errDecodingMsgp   = "error decoding msgp req"
+	errDecodingJSON   = "error decoding JSON request"
+	errDecodingProto  = "error decoding Protocol Buffers request"
 )
 
 func handleAPI(w http.ResponseWriter, r *http.Request, s *data.Site, u *data.User, slugs []string) {
@@ -79,25 +81,7 @@ func handleAPI(w http.ResponseWriter, r *http.Request, s *data.Site, u *data.Use
 			writeApiReqErr(w, http.StatusInternalServerError, errProcessingMsg)
 			return
 		}
-		if queryData := params.Get("data"); queryData != "" {
-			decoded, err := hex.DecodeString(queryData)
-			if err != nil {
-				log.Err(r, fmt.Sprintf("could not hex-decode data in GET request; RawQuery was %q", r.URL.RawQuery), err)
-				writeApiReqErr(w, http.StatusInternalServerError, errProcessingMsg)
-				return
-			}
-			decoder, ok := handler.(msgp.Decoder)
-			if !ok {
-				log.Err(r, "got content-type MessagePack but handler is not a decoder", unexpectedContentType)
-				writeApiReqErr(w, http.StatusBadRequest, errProcessingMsg)
-				return
-			}
-			if err := msgp.Decode(bytes.NewBuffer(decoded), decoder); err != nil {
-				log.Err(r, errDecodingMsgp, err)
-				writeApiReqErr(w, http.StatusInternalServerError, errProcessingMsg)
-				return
-			}
-		}
+		queryVals := r.URL.Query()
 	} else {
 		var contentType string
 		if cth := r.Header["Content-Type"]; len(cth) > 0 {
@@ -105,15 +89,21 @@ func handleAPI(w http.ResponseWriter, r *http.Request, s *data.Site, u *data.Use
 		}
 
 		switch contentType {
-		case util.ContentTypeMessagePack:
-			decoder, ok := handler.(msgp.Decoder)
+		case util.ContentTypeProtobuf:
+			body, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				log.Err(r, "reading request body", err)
+				writeApiReqErr(w, http.StatusInternalServerError, errProcessingMsg)
+				return
+			}
+			decoder, ok := handler.(proto.Decoder)
 			if !ok {
 				log.Err(r, "got content-type MessagePack but handler is not a decoder", unexpectedContentType)
 				writeApiReqErr(w, http.StatusBadRequest, errProcessingMsg)
 				return
 			}
-			if err := msgp.Decode(r.Body, decoder); err != nil {
-				log.Err(r, errDecodingMsgp, err)
+			if err := proto.Unmarshal(body, decoder); err != nil {
+				log.Err(r, errDecodingProto, err)
 				writeApiReqErr(w, http.StatusInternalServerError, errProcessingMsg)
 				return
 			}
@@ -147,7 +137,7 @@ func handleAPI(w http.ResponseWriter, r *http.Request, s *data.Site, u *data.Use
 				return
 			}
 			if err := msgp.Decode(r.Body, decoder); err != nil {
-				log.Err(r, errDecodingMsgp, err)
+				log.Err(r, errDecodingProto, err)
 				writeApiReqErr(w, http.StatusInternalServerError, errProcessingMsg)
 				return
 			}
@@ -222,18 +212,18 @@ type APIEndpoint struct {
 // APIHandler represents a handler of an API endpoint. The concrete type of an APIHandler is able to decode
 // the request body and be populated with the contents.
 type APIHandler interface {
-	// authorized says if the current user is authorized to make the request. This function is always called
-	// after the request is decoded.
+	// authorized says if the current user is authorized to make the request. This function is
+	// always called after the request is parsed.
 	authorized(*http.Request, *data.Site, *data.User) bool
 
-	// handle handles the request and returns a response.
+	// handle responds to the request. If handle returns an APIResponse with a non-empty err field,
+	// all the other fields will be ignored and the HTTP response status will not be 200.
 	handle(*http.Request, *data.Site, *data.User) *APIResponse
 }
 
-// apiEndpoints lists the handling functions to all the API endpoints.
+// apiEndpoints lists the handlers for all the API endpoints.
 // At the root level in this map and at each nested sub-map of APIEndpoint elements there must be
-// a non-nil Points function defined.
-// The SubPathHandler may be nil for any endpoint.
+// a non-nil Points function. The SubPathHandler may be nil for any endpoint.
 var apiEndpoints = map[string]APIEndpoint{
 	"user": {
 		Points: func(method string) APIHandler {
@@ -381,17 +371,15 @@ type formURLDecoder interface {
 
 var unexpectedContentType = errors.New("unexpected content type")
 
-// APIResponse represents a response by a handler of an API endpoint. If an API endpoint handler returns an APIResponse with
-// a non-empty err field, all the other fields will be ignored and the HTTP response status will not be 200.
+// An APIResponse is a response by a handler of an API endpoint.
 type APIResponse struct {
-	Status   int          // the HTTP status code (not encoded in response); this should be left at 0 to indicate status OK
-	Body     msgp.Encoder // the body of the response
-	Warnings []string     // warnings are added when non-critical parts of a request fail
-	err      string       // an error is set when the request fails, in which case only the error message is sent in the response
+	Status   int           // the HTTP status code (not encoded in response); this should be left at 0 to indicate status OK
+	Body     proto.Message // the body of the response
+	Warnings []string      // warnings are added when non-critical parts of a request fail
+	err      string        // an error is set when the request fails, in which case only the error message is sent in the response
 }
 
-// EncodeMsg implements msgp.Encodable. The body of the response must never be nil.
-func (ar *APIResponse) EncodeMsg(en *msgp.Writer) error {
+func (ar *APIResponse) EncodeMsg(w io.Writer) error {
 	// The map header indicates the number of elements (either 1 or 2).
 	if len(ar.Warnings) == 0 {
 		err := en.Append(0x81)
