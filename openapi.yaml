@@ -20,6 +20,8 @@ components:
   responses:
     invalidRequestResponse:
       description: The request could not be accepted with the data given
+  securitySchemes:
+    token:
   schemas:
   # Generated schema code goes here.
 paths:
@@ -51,11 +53,30 @@ paths:
       operationId: GetSiteById
       responses:
         "200":
-          description: Returns a list of the sites that are organized under the site of the request
+          description: Returns details of the site with the ID specified
           content:
             "*/*":
               schema:
                 $ref: "#/components/schemas/Site"
+    post:
+      summary: Create a site
+      operationId: CreateSite
+      responses:
+        "200":
+          description: Created a site
+  /auth:
+    post:
+      summary: Log in
+      operationId: LogIn
+      responses:
+        "200":
+          description: Logged out
+    delete:
+      summary: Log out
+      operationId: LogOut
+      responses:
+        "200":
+          description: Logged in
   /content:
     get:
       summary: List content
@@ -130,6 +151,12 @@ paths:
       responses:
         "200":
           description: Returns details of the user with the ID specified
+    post:
+      summary: Upload a media object
+      operationId: UploadMedia
+      responses:
+        "202":
+          description: Accepted upload request
     delete:
       summary: Schedules deletion of the identified media object and its child objects
       operationId: DeleteMediaById
@@ -154,3 +181,9 @@ paths:
       responses:
         "200":
           description: Returns a list of the selected plugins on the site
+  /health:
+    get:
+      summary: Check the health of the system
+      responses:
+        "200":
+          description: Basic checks passed

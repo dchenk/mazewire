@@ -1,4 +1,4 @@
-// Package data contains the basic types used in the application.
+// Package data supports interacting with the main database and defines a few important data types.
 package data
 
 import (

@@ -148,8 +148,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	// Respond with a site page or the site admin page, always with the status 200 (even if showing a 404).
 	code, page := handlePage(r, slugs, s, userSite.u)
 	w.WriteHeader(code)
-	writeDocHTML(w, page, "en") // TODO: allow customizing the lang on a per-page basis
-
+	// TODO: allow customizing the lang on a per-page basis
+	if err := writeDocHTML(w, page, "en"); err != nil {
+		// log it
+	}
 }
 
 // userSite conveniently wraps a pointer to a User and a site ID and is used as the value sent down the channel

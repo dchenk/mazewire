@@ -8,8 +8,8 @@ import (
 
 	"github.com/dchenk/mazewire/pkg/data"
 	"github.com/dchenk/mazewire/pkg/log"
+	"github.com/dchenk/mazewire/pkg/roles"
 	"github.com/dchenk/mazewire/pkg/room"
-	"github.com/dchenk/mazewire/pkg/users"
 	"github.com/dchenk/mazewire/pkg/util"
 )
 
@@ -30,7 +30,7 @@ type SiteCreate struct {
 // on the current site. If they are logged in but don't have admin role, they should be
 // redirected to the main site to create the site there.
 func (*SiteCreate) authorized(_ *http.Request, s *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.Role_SUBSCRIBER) || s.Id == 1
+	return roles.RoleAtLeast(u.Role, roles.Role_SUBSCRIBER) || s.Id == 1
 }
 
 // createWebsite creates a website and sets it up with the right tables and pages/posts.
@@ -93,7 +93,7 @@ type SiteChangeHome struct {
 }
 
 func (req *SiteChangeHome) authorized(r *http.Request, s *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.RoleAdmin)
+	return roles.RoleAtLeast(u.Role, roles.RoleAdmin)
 }
 
 func (req *SiteChangeHome) handle(r *http.Request, s *data.Site, u *data.User) *APIResponse {
@@ -101,12 +101,12 @@ func (req *SiteChangeHome) handle(r *http.Request, s *data.Site, u *data.User) *
 	if req.Site == 0 {
 		req.Site = s.Id // Site defaults to the current host
 	} else {
-		role, err := users.SiteRole(u.Id, req.Site)
+		role, err := roles.SiteRole(u.Id, req.Site)
 		if err != nil {
 			log.Err(r, "could not get logged in site role for user", err)
 			return errProcessing()
 		}
-		if !users.RoleAtLeast(role, users.RoleAdmin) {
+		if !roles.RoleAtLeast(role, roles.RoleAdmin) {
 			return errLowPrivileges()
 		}
 	}
@@ -127,7 +127,7 @@ type SiteDelete struct {
 }
 
 func (*SiteDelete) authorized(_ *http.Request, _ *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.RoleOwner)
+	return roles.RoleAtLeast(u.Role, roles.Role_OWNER)
 }
 
 func (*SiteDelete) handle(*http.Request, *data.Site, *data.User) *APIResponse { // TODO: finish, require email confirmation
@@ -150,7 +150,7 @@ type SiteGetTheme struct {
 
 // authorized checks just if the user has at least author role on the current site.
 func (*SiteGetTheme) authorized(_ *http.Request, _ *data.Site, u *data.User) bool {
-	return users.RoleAtLeast(u.Role, users.Role_AUTHOR)
+	return roles.RoleAtLeast(u.Role, roles.Role_AUTHOR)
 }
 
 // handle returns the current theme for a site. This response body is a room.Tree.
@@ -158,12 +158,12 @@ func (req *SiteGetTheme) handle(r *http.Request, s *data.Site, u *data.User) *AP
 	if req.Site == 0 {
 		req.Site = s.Id // Site defaults to the current host.
 	} else {
-		role, err := users.SiteRole(u.Id, req.Site)
+		role, err := roles.SiteRole(u.Id, req.Site)
 		if err != nil {
 			log.Err(r, "could not get logged in site role for user", err)
 			return errProcessing()
 		}
-		if !users.RoleAtLeast(role, users.Role_AUTHOR) {
+		if !roles.RoleAtLeast(role, roles.Role_AUTHOR) {
 			return errLowPrivileges()
 		}
 	}

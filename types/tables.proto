@@ -118,7 +118,7 @@ message User {
 	string lname = 6;
 
 	// The user's role in the site being accessed in the current request.
-	string role = 7;
+	int32 role = 7;
 
 	// Time of the last update.
 	time.Time updated = 8;

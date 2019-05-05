@@ -1,0 +1,207 @@
+Site:
+  type: object
+  description: >
+    A Site is the basic settings of a site, except for the time when the site was created.
+    Everything else that shapes a site is in either an Option or a Blob.
+  properties:
+    id:
+      type: int64
+      description: Row ID in the table.
+      x-proto-field: 1
+    domain:
+      type: string
+      description: The domain name, without any slashes; may include a sub-domain.
+      x-proto-field: 2
+    name:
+      type: string
+      description: The name of the website.
+      x-proto-field: 3
+    logo:
+      type: string
+      description: The URL of the main logo file.
+      x-proto-field: 4
+    favicon:
+      type: string
+      description: The URL of the favicon file.
+      x-proto-field: 5
+    language:
+      type: string
+      description: The primary language.
+      x-proto-field: 6
+    tls:
+      $ref: "#/TlsStatus"
+      x-proto-field: 7
+    updated:
+      $ref: "#/Time"
+      x-proto-field: 8
+    created:
+      $ref: "#/Time"
+      x-proto-field: 9
+User:
+  type: object
+  description: A User is all the basic info of a registered user.
+  properties:
+    id:
+      type: string
+      description: >
+        Row ID in the table.
+        This is a 40-bit unsigned integer encoded in base58 using the format defined in pkg/base58
+        in this project.
+      x-proto-field: 1
+    uname:
+      type: string
+      description: Username.
+      x-attribute: unique key
+      x-proto-field: 2
+    email:
+      type: string
+      description: Email address.
+      x-attribute: unique key
+      x-proto-field: 3
+    pass:
+      type: bytes
+      description: Password, already hashed.
+      x-proto-field: 4
+    fname:
+      type: string
+      description: First name.
+      x-proto-field: 5
+    lname:
+      type: string
+      description: Last name.
+      x-proto-field: 6
+    updated:
+      $ref: "#/Time"
+      x-proto-field: 7
+    created:
+      $ref: "#/Time"
+      x-proto-field: 8
+UserMeta:
+  type: object
+  description: >
+    A UserMeta contains the key and value for any kind of meta data for a user. The rows in the
+    database table are primary-keyed by both the user ID and the K.
+  properties:
+    user_id:
+      type: string
+      description: UserId is a foreign key to a User ID.
+      x-proto-field: 1
+    k:
+      type: string
+      x-proto-field: 2
+    v:
+      type: bytes
+      x-proto-field: 3
+    updated:
+      $ref: "#/Time"
+      x-proto-field: 4
+Option:
+  type: object
+  description: >
+    An Option is a key-value pair holding a small amount of data for a site, the primary key being
+    the composite of the site ID and the value of K.
+  properties:
+    site_id:
+      type: int64
+      description: Foreign key to a Site ID.
+      x-proto-field: 1
+    k:
+      type: string
+      x-proto-field: 2
+    v:
+      type: bytes
+      x-proto-field: 3
+    updated:
+      $ref: "#/Time"
+      x-proto-field: 4
+Media:
+  type: object
+  description: >
+    A Media represents a static media item belonging to a website.
+    The fields Id, Site, and Name are required; the other strings default to empty strings and
+    must not be null; the Uploaded time defaults to the current time in the database.
+  properties:
+    id:
+      type: string
+      description: A UUID encoded in base32 without padding.
+      x-proto-field: 1
+    ext:
+      type: string
+      description: File extension, starting with a dot if set; optional but not null.
+      x-proto-field: 2
+    site_id:
+      type: int64
+      description: Foreign key to a Site ID.
+      x-proto-field: 3
+    name:
+      type: string
+      description: A user-defined name.
+      x-proto-field: 4
+    alt:
+      type: string
+      description: An HTML "alt" attribute.
+      x-proto-field: 5
+    desc:
+      type: string
+      description: A description.
+      x-proto-field: 6
+    updated:
+      $ref: "#/Time"
+      description: Time of the last update of the metadata.
+      x-proto-field: 7
+    created:
+      $ref: "#/Time"
+      description: Time when the object was uploaded.
+      x-proto-field: 8
+SiteMessage:
+  type: object
+  description: A SiteMessage is a notification message for a site.
+  properties:
+    id:
+      type: int64
+      description: Row ID in the table.
+      x-proto-field: 1
+    site_id:
+      type: int64
+      description: Foreign key to a Site ID.
+      x-proto-field: 2
+    min_role:
+      type: int32
+      description: MinRole is the minimum role a user must have on the site to be shown the message.
+      x-proto-field: 3
+    k:
+      type: string
+      description: K is a key to identify the message.
+      x-proto-field: 4
+    message:
+      type: string
+      x-proto-field: 5
+    created:
+      $ref: "#/Time"
+      x-proto-field: 6
+UserMessage:
+  type: object
+  description: A UserMessage is a notification message for a user.
+  properties:
+    id:
+      type: int64
+      description: Row ID in the table.
+      x-proto-field: 1
+    site_id:
+      type: int64
+      description: Foreign key to a Site ID.
+      x-proto-field: 2
+    user_id:
+      type: string
+      description: UserId is a foreign key to a User ID.
+      x-proto-field: 1
+    k:
+      type: string
+      description: K is a key to identify the message.
+      x-proto-field: 4
+    message:
+      type: string
+      x-proto-field: 5
+    created:
+      $ref: "#/Time"
+      x-proto-field: 6

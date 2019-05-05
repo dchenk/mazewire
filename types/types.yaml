@@ -1,0 +1,33 @@
+Time:
+  type: object
+  description: >
+    A Time is a point in time, represented as the number of seconds and nanoseconds since the Unix
+    Epoch of January 1, 1970 UTC.
+    The valid range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z.
+  x-proto-package: time
+  x-proto-go_package: github.com/dchenk/mazewire/pkg/types/time
+  properties:
+    seconds:
+      description: Seconds is the number of seconds since 1970-01-01T00:00:00Z.
+      type: int64
+      x-proto-field: 1
+    nanos:
+      description: >
+        Nanos is the number of nanoseconds since the time marked by the seconds. A time with a
+        negative Seconds value must still have non-negative Nanos counting forward in time.
+        The valid range is from 0 to 999,999,999.
+      type: int32
+      x-proto-field: 2
+TlsStatus:
+  type: int32
+  description: The status of TLS on the domain.
+  x-proto-package: tls
+  x-proto-go_package: github.com/dchenk/mazewire/pkg/types/tls
+  enum:
+    - value: 0
+      x-proto-name: None
+    - value: 1
+      x-proto-name: Configuring
+    - value: 2
+      x-proto-name: Good
+

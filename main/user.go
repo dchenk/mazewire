@@ -17,7 +17,6 @@ import (
 
 	"github.com/dchenk/mazewire/pkg/data"
 	"github.com/dchenk/mazewire/pkg/log"
-	"github.com/dchenk/mazewire/pkg/users"
 	"github.com/dchenk/mazewire/pkg/util"
 )
 
@@ -31,7 +30,7 @@ func getCurrentUser(r *http.Request, c chan *userSite) {
 		c <- us
 	}()
 
-	cookie, err := r.Cookie("wwuser")
+	cookie, err := r.Cookie("mwuser")
 	if err == http.ErrNoCookie || len(cookie.Value) < 40 {
 		// The base64-encoded cookie value includes a hashed signature, so in all the whole thing
 		// must be at least 40 bytes long.

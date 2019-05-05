@@ -10,17 +10,18 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/dchenk/mazewire/pkg/data"
 	"github.com/dchenk/mazewire/pkg/env"
 	"github.com/dchenk/mazewire/pkg/log"
-	"github.com/dchenk/mazewire/pkg/users"
+	"github.com/dchenk/mazewire/pkg/roles"
 	"github.com/dchenk/mazewire/pkg/util"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthLogin struct {
-	User string `msgp:"user"` // can be either username or email address
-	Pass string `msgp:"pass"`
+	User string `json:"user"` // can be either username or email address
+	Pass string `json:"pass"`
 }
 
 // authorized returns true for login requests.
@@ -35,7 +36,7 @@ func (al *AuthLogin) handle(r *http.Request, s *data.Site, u *data.User) *APIRes
 }
 
 // RespUserLogin is the message sent with OK responses for login requests.
-var RespUserLogin = msgp.Raw([]byte{0xa2, 'o', 'k'})
+var RespUserLogin = "ok"
 
 // authLoginForm: POST auth
 // This endpoint handles user log-ins via a form.
@@ -100,7 +101,7 @@ func checkLoginCreds(r *http.Request, s *data.Site, u *data.User, unameEmail str
 		return errProcessing()
 	}
 
-	if tempU.Role == users.RoleNone {
+	if tempU.Role == roles.Role_NONE {
 		return APIResponseErr(errNoMembership)
 	}
 
@@ -131,7 +132,7 @@ func checkLoginCreds(r *http.Request, s *data.Site, u *data.User, unameEmail str
 func createLoginCookie(r *http.Request, userID int64, hashedUserPass []byte, siteID int64) string {
 	body := make([]byte, 0, msgp.Int64Size*3+md5.Size+21)
 
-	body = msgp.AppendInt64(body, time.Now().Add(time.Hour*4).Unix())
+	body = msgp.AppendInt64(body, time.Now().Add(time.Hour * 4).Unix())
 
 	body = append(body, userAgentToken(r.UserAgent())...)
 
@@ -149,7 +150,7 @@ func createLoginCookie(r *http.Request, userID int64, hashedUserPass []byte, sit
 	var cookie strings.Builder
 	cookie.Grow(cookieLenBase + len(bodyEncoded))
 
-	cookie.WriteString("wwuser=")
+	cookie.WriteString("mwuser=")
 	cookie.Write(bodyEncoded)
 	cookie.WriteByte('.')
 
@@ -169,7 +170,7 @@ func createLoginCookie(r *http.Request, userID int64, hashedUserPass []byte, sit
 
 // cookieLenBase is the length of a constant string included in the auth cookie body.
 // The 43 represents base64.RawURLEncoding.EncodedLen(sha256.Size) from the cookie body signature.
-const cookieLenBase = len("wwuser=") + 1 + len("; Secure; HttpOnly; Path=/") + 43
+const cookieLenBase = len("mwuser=") + 1 + len("; Secure; HttpOnly; Path=/") + 43
 
 // authLogout: DELETE auth
 type authLogout struct{}
@@ -188,7 +189,7 @@ func (authLogout) handle(_ *http.Request, _ *data.Site, _ *data.User) *APIRespon
 
 func createLogoutCookie() string {
 	if env.Prod() {
-		return "wwuser=none; Secure; HttpOnly; Path=/"
+		return "mwuser=none; Secure; HttpOnly; Path=/"
 	}
-	return "wwuser=none; HttpOnly; Path=/"
+	return "mwuser=none; HttpOnly; Path=/"
 }

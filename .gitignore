@@ -1,5 +1,5 @@
 .idea
-.env
+*.env
 main/env.go
 main/cert.go
 main/main
